@@ -1,67 +1,40 @@
-# WaterWise Planner Pro — Visual Prototype
+# JobCam
 
-> Your lawn learns. Your bill shrinks. Your water saved.
+Free, open-source, local-first job-site photo documentation for contractors and field crews.
+Create a project, capture or upload photos, mark up issues, and export a branded customer report.
+No account or subscription is required. Job records live in the browser; export backups to keep a copy.
+Optional AI uses your chosen provider, whose charges may apply.
 
-A fully interactive, testable visual prototype of the WaterWise Planner Pro mobile app,
-built as a mobile-first React web app. No backend required — all data is mocked and the
-savings math runs client-side using the real algorithm from the product spec.
+**[Try JobCam](https://zeds88.github.io/Estimatecam.app/)** · **[Full documentation](jobcam/README.md)** · **[Launch and operating guide](jobcam/docs/LAUNCH.md)**
 
-## Run it
+## Develop JobCam
 
-```bash
-npm install
+```sh
+cd jobcam
+npm ci
 npm run dev
 ```
 
-Open http://localhost:5173 — the app renders in a phone-width frame, so it's testable
-on desktop or a real phone.
+Run `npm test` and `npm run build` before shipping. See the app README for browser tests.
+JobCam is MIT licensed: [license](jobcam/LICENSE).
 
-## What you can test
+## Deployment
 
-| Flow | What happens |
-|---|---|
-| **Onboarding** | Splash → signup → yard baseline (size slider, lawn type, zip) → animated savings projection |
-| **Dashboard** | Live weekly savings (gallons, $, CO₂, rain skips), 7-day forecast strip, next watering event, action carousel |
-| **Schedule** | Adaptive-mode toggle, expandable zone cards (frequency, duration, moisture, soil), 7-day calendar preview that reacts to weather |
-| **Impact** | Weekly stat cards, 5-week trend chart, neighborhood social proof, share (Web Share API / clipboard) |
-| **Installers** | List & mock-map views, installer cards, 4-step booking modal (date → time → review/pay → confirmation) |
-| **Profile** | Yard summary, referral code with copy-to-clipboard, booking history, demo reset |
+JobCam lives in `jobcam/` on the **main** branch. The workflow in
+`.github/workflows/jobcam-pages.yml` tests and publishes it to GitHub Pages.
+For other static hosts, set the project root to `jobcam` and output directory to `dist`.
 
-State persists to `localStorage`, so a page refresh keeps you signed in. Use
-**Profile → Reset demo** to start over.
+The repository's default branch
+currently contains a separate WaterWise irrigation prototype. Select **main** for JobCam work.
+The root Vite application is that prototype; do not deploy it as JobCam.
 
-## Real business logic included
+## Privacy and scope
 
-`src/lib/calculator.ts` implements the spec's algorithms:
+Photos, videos, customer details and notes stay in local browser storage unless the user chooses
+an export or an external AI operation. Optional usage analytics is off by default and excludes job
+content. Team sync, hosted customer portals and native mobile apps are not included.
 
-- **Savings calculator** — watering rates per grass type (Bermuda 0.62, St. Augustine 0.75,
-  Zoysia 0.58, Fescue 0.83 gal/sqft), USDA climate-zone multipliers (8a/8b/9a), baseline
-  3×/week vs. optimized 1.5×/week, $0.004/gal Texas water cost.
-- **Adaptive schedule optimizer** — skips watering when rain > 0.5", pauses on freeze,
-  shortens duration on cool days (< 75°F), extends on hot days (> 95°F).
+## WaterWise prototype
 
-## Stack
-
-React 18 · TypeScript · Vite · Tailwind CSS v3 · React Router v6 · lucide-react
-
-## Structure
-
-```
-src/
-├── App.tsx              # Routes + onboarding guard
-├── context/             # Global state (Context + Reducer, localStorage persistence)
-├── lib/calculator.ts    # Savings + adaptive-schedule algorithms
-├── data/mockData.ts     # Installers, forecast, zones, impact history
-├── components/          # ui primitives, layout, auth, schedule, installers
-└── screens/             # Home, Schedule, Impact, Installers, Profile
-```
-
-## Notes
-
-- The gamification layer from the original spec (badges, points, levels, leaderboards)
-  was intentionally omitted per product direction.
-- Payments, SMS, email, and maps are simulated — no external services are called.
-
----
-
-**Also in this repo:** [`jobcam/`](./jobcam) – a free, open-source, local-first job site photo documentation app (separate package).
+The earlier irrigation prototype remains on
+[claude/waterwise-visual-model-naQj2](https://github.com/zeds88/Estimatecam.app/tree/claude/waterwise-visual-model-naQj2).

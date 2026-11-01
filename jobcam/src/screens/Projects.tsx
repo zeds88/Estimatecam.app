@@ -6,6 +6,7 @@ import { Empty, Img, Modal } from '../components/ui'
 import { getAll, listProjects, newProject, saveProject, get } from '../lib/db'
 import { useLoad } from '../lib/hooks'
 import type { Photo, Project, ProjectStatus } from '../lib/types'
+import { captureAnalytics } from '../lib/analytics'
 
 export default function Projects() {
   const nav = useNavigate()
@@ -76,7 +77,7 @@ export default function Projects() {
           <ProjectForm
             initial={newProject()}
             onCancel={() => setCreating(false)}
-            onSave={async (p: Project) => { await saveProject(p); nav(`/p/${p.id}`) }}
+            onSave={async (p: Project) => { await saveProject(p); captureAnalytics('jobcam_project_created', { source: 'form' }); nav(`/p/${p.id}`) }}
           />
         </Modal>
       )}

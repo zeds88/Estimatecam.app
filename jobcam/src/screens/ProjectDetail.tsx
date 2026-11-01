@@ -22,6 +22,7 @@ import { flattenPhoto } from '../lib/image'
 import { aiRecap, localRecap } from '../lib/recap'
 import { buildReportHtml } from '../lib/report'
 import type { Checklist, Photo, Project } from '../lib/types'
+import { captureAnalytics } from '../lib/analytics'
 
 type Tab = 'photos' | 'scope' | 'checklists' | 'estimate' | 'activity'
 
@@ -127,6 +128,7 @@ export default function ProjectDetail() {
         review: (await get<Project>('projects', id))?.review, recap: recap || localRecap(project, fp, checklists, comments),
       })
       showHtml(win, html, `${project.name.replace(/[^\w]+/g, '-')}-report.html`)
+      captureAnalytics('jobcam_report_generated', { action })
     } catch (e) {
       win?.close()
       window.alert(`Couldn’t build the report: ${(e as Error).message}`)

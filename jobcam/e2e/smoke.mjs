@@ -83,6 +83,10 @@ try {
   await page.getByRole('button', { name: 'Open photo' }).first().click()
   await page.getByRole('button', { name: 'Mark up' }).click()
   const cv = page.getByLabel('Annotation canvas')
+  await page.waitForFunction(() => {
+    const canvas = document.querySelector('[aria-label="Annotation canvas"]')
+    return canvas && canvas.getBoundingClientRect().width > 0 && canvas.getBoundingClientRect().height > 0
+  })
   const box = await cv.boundingBox()
   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.2)
   await page.mouse.down()

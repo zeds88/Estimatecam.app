@@ -8,6 +8,7 @@ import ProjectDetail from './screens/ProjectDetail'
 import Projects from './screens/Projects'
 import SettingsScreen from './screens/SettingsScreen'
 import Walk from './screens/Walk'
+import AnalyticsScreenTracker from './components/AnalyticsScreenTracker'
 
 const NAV = [
   { to: '/', label: 'Projects', icon: FolderOpen, end: true },
@@ -30,6 +31,7 @@ export default function App() {
   }, [])
   return (
     <HashRouter>
+      <AnalyticsScreenTracker />
       <div className="min-h-dvh md:pl-56">
         <aside className="fixed inset-y-0 left-0 hidden w-56 flex-col gap-1 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 md:flex">
           <div className="mb-4 flex items-center gap-2 px-2 text-lg font-extrabold">

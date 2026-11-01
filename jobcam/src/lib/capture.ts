@@ -3,6 +3,7 @@ import { processImage, getPosition } from './image'
 import { videoPoster } from './video'
 import { uid } from './id'
 import type { Photo, Project } from './types'
+import { captureAnalytics } from './analytics'
 
 /** Normalise a camera frame / picked file into a stored Photo for a project. */
 export async function addPhoto(projectId: string, source: Blob, opts: { tags?: string[]; caption?: string; withGps?: boolean } = {}): Promise<Photo> {
@@ -14,6 +15,7 @@ export async function addPhoto(projectId: string, source: Blob, opts: { tags?: s
   await savePhoto(photo)
   const project = await get<Project>('projects', projectId)
   if (project) await saveProject({ ...project, coverPhotoId: project.coverPhotoId ?? photo.id })
+  captureAnalytics('jobcam_media_added', { media_type: 'photo' })
   return photo
 }
 
@@ -29,6 +31,7 @@ export async function addVideo(projectId: string, source: Blob, opts: { tags?: s
   await savePhoto(photo)
   const project = await get<Project>('projects', projectId)
   if (project) await saveProject({ ...project, coverPhotoId: project.coverPhotoId ?? photo.id })
+  captureAnalytics('jobcam_media_added', { media_type: 'video' })
   return photo
 }
 

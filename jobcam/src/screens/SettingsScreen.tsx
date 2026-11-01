@@ -12,6 +12,8 @@ import { DEFAULT_SETTINGS, loadSettings, saveSettings } from '../lib/db'
 import { callModel } from '../lib/ai'
 import { LOCAL_MODELS } from '../lib/transcribe'
 import type { Settings } from '../lib/types'
+import AnalyticsSettings from '../components/AnalyticsSettings'
+import { captureAnalytics } from '../lib/analytics'
 
 const AI_PRESETS: { label: string; ai: Pick<Settings['ai'], 'provider' | 'endpoint'> }[] = [
   { label: 'Claude', ai: { provider: 'anthropic', endpoint: '' } },
@@ -44,6 +46,8 @@ export default function SettingsScreen() {
   return (
     <div className="space-y-5">
       <h1 className="text-2xl font-extrabold">Settings</h1>
+
+      <AnalyticsSettings />
 
       <BrandingSettings s={s} setS={setS} />
 
@@ -153,6 +157,7 @@ export default function SettingsScreen() {
             const url = URL.createObjectURL(new Blob([await exportAll()], { type: 'application/json' }))
             const a = document.createElement('a')
             a.href = url; a.download = `jobcam-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click()
+            captureAnalytics('jobcam_backup_exported')
             setTimeout(() => URL.revokeObjectURL(url), 10_000)
             flash('Backup downloaded')
           }}><Download size={18} /> Export backup</button>

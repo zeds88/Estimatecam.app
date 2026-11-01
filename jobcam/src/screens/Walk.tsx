@@ -8,6 +8,7 @@ import { useDictation, useLoad } from '../lib/hooks'
 import { uid } from '../lib/id'
 import { parseWalk } from '../lib/narration'
 import type { Project, WalkResult } from '../lib/types'
+import { captureAnalytics } from '../lib/analytics'
 
 const SAMPLE =
   'Walking the job at the Johnson residence, 4821 Oak Ridge Drive. Front yard has three broken sprinkler heads. Zone 4 valve is leaking. We need to replace the controller. Backflow needs service. Back fence looks fine.'
@@ -36,6 +37,7 @@ export default function Walk() {
     }
     if (!project) return
     await saveProject(project)
+    if (target === 'new') captureAnalytics('jobcam_project_created', { source: 'walk' })
     const now = Date.now()
     const todo = [...result.tasks, ...result.issues.map((i) => `Resolve: ${i}`)]
     if (todo.length) await put('checklists', { id: uid(), projectId: project.id, title: 'Walkthrough punch list', createdAt: now, items: todo.map((t) => ({ id: uid(), text: t, done: false })) })
@@ -43,6 +45,7 @@ export default function Walk() {
       const s = await loadSettings()
       await put('estimates', { id: uid(), projectId: project.id, title: 'Estimate from walkthrough', proposal: false, createdAt: now, taxRate: s.taxRate, items: result.lineItems.map((l) => ({ ...l, id: uid() })) })
     }
+    captureAnalytics('jobcam_walk_saved')
     nav(`/p/${project.id}`)
   }
 
