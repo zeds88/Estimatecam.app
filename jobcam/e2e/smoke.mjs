@@ -29,7 +29,7 @@ try {
   // ───── uploads from a phone-like library: rotated JPEG, HEVC .mov, unreadable HEIC ─────
   const dialogs = []
   page.on('dialog', (d) => dialogs.push(d.message()))
-  await page.getByRole('button', { name: 'New' }).click()
+  await page.getByRole('button', { name: 'New project' }).click()
   await page.getByPlaceholder('Johnson – sprinkler repair').fill('Upload check')
   await page.getByRole('button', { name: 'Save' }).click()
   await page.getByLabel('Upload photos or videos').waitFor({ state: 'attached' })
@@ -54,7 +54,7 @@ try {
   await page.getByRole('link', { name: 'Projects' }).last().click()
 
   // create project
-  await page.getByRole('button', { name: 'New' }).click()
+  await page.getByRole('button', { name: 'New project' }).click()
   await page.getByPlaceholder('Johnson – sprinkler repair').fill('Johnson – sprinkler repair')
   await page.getByPlaceholder('4821 Oak Ridge Dr').fill('4821 Oak Ridge Dr')
   await page.getByRole('button', { name: 'Save' }).click()
@@ -155,6 +155,8 @@ try {
     await route.fulfill({ status: 200, headers: cors, contentType: 'application/json', body: JSON.stringify({ text: SEGMENTS.map((x) => x.text).join(''), segments: SEGMENTS }) })
   })
   await page.getByRole('link', { name: 'Settings' }).last().click()
+  await page.locator('#settings-narration > summary').click()
+  await page.locator('#settings-ai > summary').click()
   await page.getByLabel('Engine').selectOption({ label: 'Transcription API (OpenAI-compatible)' })
   await page.getByLabel('API key (stored only on this device)').last().fill('sk-stt')
   await page.getByRole('button', { name: 'Claude', exact: true }).click()
@@ -233,6 +235,7 @@ try {
   await page.keyboard.press('Escape')
 
   // analyze everything else, then AI job review
+  await page.locator('summary').filter({ hasText: 'Optional AI analysis' }).click()
   await page.getByRole('button', { name: /Analyze all/ }).click()
   await page.waitForFunction(() => document.querySelectorAll('[aria-label="AI analyzed"]').length === 4, null, { timeout: 30000 })
   await page.getByRole('button', { name: /Activity/ }).click()
@@ -256,6 +259,8 @@ try {
   await page.getByLabel('Letterhead preview').locator('img').waitFor()
   await page.getByRole('button', { name: 'Use #b91c1c' }).click()
   await page.getByLabel('Phone', { exact: true }).fill('214-555-0142')
+  await page.getByText('Website, address & license details', { exact: true }).click()
+  await page.getByText('Proposal terms & document footer', { exact: true }).click()
   await page.getByLabel('License / certification no.').fill('TX-IRR-1234')
   await page.getByLabel('Footer (every page of every document)').fill('Thank you for your business!')
   await page.getByRole('button', { name: 'Insert sample terms' }).click()
@@ -322,10 +327,10 @@ try {
   await popup.close()
 
   // walk the job
-  await page.getByRole('link', { name: 'Walk' }).last().click()
+  await page.getByRole('link', { name: 'Walkthrough' }).last().click()
   await page.getByRole('button', { name: 'Try an example' }).click()
   await page.getByRole('button', { name: 'Organize' }).click()
-  await page.getByText('Punch list').waitFor()
+  await page.getByRole('heading', { name: /^Punch list/ }).waitFor()
   await page.getByText('3 × Replace sprinkler head').waitFor()
   await shot('07-walk')
   await page.getByRole('button', { name: 'Save' }).click()
@@ -353,12 +358,13 @@ try {
 
   // ───── price-book import changes what "walk the job" prices ─────
   await page.getByRole('link', { name: 'Settings' }).last().click()
+  await page.locator('#settings-price-book > summary').click()
   await page.getByRole('button', { name: /Import…/ }).click()
   await page.getByLabel('Price list').fill('keywords,description,unit,price\nspray head|sprinkler head,"Replace spray head 4"" (parts + labor)",head,$24.00\nvalve|zone valve,Replace valve,valve,375')
   await page.getByLabel('Import preview').getByText('Replace valve').waitFor()
   await page.getByRole('button', { name: 'Import', exact: true }).click()
   await page.getByText('Price book now has 2 items').waitFor()
-  await page.getByRole('link', { name: 'Walk' }).last().click()
+  await page.getByRole('link', { name: 'Walkthrough' }).last().click()
   await page.getByRole('button', { name: 'Try an example' }).click()
   await page.getByRole('button', { name: 'Organize' }).click()
   await page.getByText('3 × Replace spray head 4" (parts + labor)').waitFor()

@@ -46,7 +46,7 @@ export default function PhotoViewer({ photo, index, total, isCover, onClose, onN
             {isVideo && videoProblem && (
               <div role="alert" className="space-y-2 bg-amber-100 p-3 text-sm text-amber-950">
                 <p>{UNPLAYABLE}</p>
-                <a className="btn !py-1.5" href={videoUrl} download={`jobcam-video-${photo.id.slice(0, 6)}`}>Download original</a>
+                <a className="btn !py-1.5" href={videoUrl} download={`estimate-cam-video-${photo.id.slice(0, 6)}`}>Download original</a>
               </div>
             )}
             {photo.annotations.length > 0 && <span className="absolute left-2 top-2 rounded bg-brand px-2 py-0.5 text-xs font-bold text-white">Marked up</span>}

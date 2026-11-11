@@ -95,7 +95,7 @@ describe('brand colours', () => {
   it('keeps any chosen colour readable under white text', () => {
     for (const c of ['#ffff00', '#f5f5f5', '#ffffff', '#2563eb', '#00ff88']) expect(contrastOnWhite(readableBrand(c).rgb)).toBeGreaterThanOrEqual(4.5)
     expect(readableBrand('#2563eb').hex).toBe('#2563eb') // already fine: unchanged
-    expect(readableBrand('nonsense').hex).toBe('#2563eb')
+    expect(readableBrand('nonsense').hex).toBe('#18324f')
     expect(parseHex('#abc')).toEqual([170, 187, 204])
   })
 })

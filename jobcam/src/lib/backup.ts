@@ -49,7 +49,7 @@ export async function exportAll(): Promise<string> {
 
 export async function importAll(json: string): Promise<Record<string, number>> {
   const parsed = JSON.parse(json)
-  if (parsed?.app !== 'jobcam' || parsed.version !== 1 || !isRecord(parsed.data)) throw new Error('Not a JobCam backup file or unsupported backup version')
+  if (parsed?.app !== 'jobcam' || parsed.version !== 1 || !isRecord(parsed.data)) throw new Error('Not an Estimate Cam backup file or unsupported backup version')
   const localSettings = await loadSettings()
   const counts: Record<string, number> = {}
   const prepared: Partial<Record<StoreName, Record<string, unknown>[]>> = {}

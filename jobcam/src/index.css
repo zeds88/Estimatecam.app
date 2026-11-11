@@ -2,22 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-html { -webkit-tap-highlight-color: transparent; }
-:root { --brand: 37 99 235; }
-body { @apply bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100; }
+:root { --brand: 24 50 79; color-scheme: light; }
+html { -webkit-tap-highlight-color: transparent; scroll-padding-top: 6rem; }
+body { @apply m-0 bg-[#f4f7fa] text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; }
+button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), summary { cursor: pointer; }
+:focus-visible { outline: 3px solid #087f8c; outline-offset: 3px; }
+input[type=checkbox] { accent-color: rgb(var(--brand)); }
+summary { min-height: 44px; }
 
 @layer components {
-  .card { @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900; }
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition active:scale-95 disabled:opacity-50 bg-slate-200 text-slate-900 hover:bg-slate-300 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700; }
-  .btn-primary { @apply bg-brand text-white hover:bg-brand/90 dark:bg-brand dark:text-white dark:hover:bg-brand/90; }
-  .btn-danger { @apply bg-red-600 text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500; }
-  .btn-ghost { @apply bg-transparent hover:bg-slate-200 dark:bg-transparent dark:hover:bg-slate-800; }
-  .input { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/30 dark:border-slate-700 dark:bg-slate-900; }
-  .label { @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500; }
-  .chip { @apply inline-flex items-center rounded-full border border-slate-300 px-3 py-1 text-xs font-medium dark:border-slate-700; }
-  .chip-on { @apply border-brand bg-brand text-white; }
+  .card { @apply rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900; }
+  .btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700; }
+  .btn-primary { @apply border-transparent bg-brand text-white hover:border-transparent hover:bg-brand/90 dark:border-transparent dark:bg-brand dark:text-white dark:hover:bg-brand/90; }
+  .btn-danger { @apply border-transparent bg-red-600 text-white hover:border-transparent hover:bg-red-700 dark:border-transparent dark:bg-red-600 dark:hover:bg-red-700; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:border-transparent hover:bg-slate-100 dark:border-transparent dark:bg-transparent dark:hover:bg-slate-800; }
+  .input { @apply min-h-11 w-full min-w-0 rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20 sm:text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100; }
+  .label { @apply mb-1.5 block text-sm font-medium text-slate-600 dark:text-slate-300; }
+  .chip { @apply inline-flex min-h-11 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300; }
+  .chip-on { @apply border-brand bg-brand/10 text-brand dark:border-brand dark:bg-brand dark:text-white; }
+  .page-heading { @apply text-[28px] font-semibold leading-tight tracking-tight text-slate-900 sm:text-[32px] dark:text-slate-50; overflow-wrap: anywhere; }
+  .page-description { @apply mt-2 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base dark:text-slate-400; }
+  .section-heading { @apply text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100; }
+  .section-copy { @apply max-w-2xl text-sm leading-relaxed text-slate-500 dark:text-slate-400; }
 }
 
+.app-shell { min-height: 100dvh; }
+.app-sidebar { display: none; }
+.product-brand { display: flex; align-items: center; gap: 10px; color: #18324f; text-decoration: none; min-width: 0; }
+.product-brand strong { display: block; font-size: 19px; font-weight: 700; letter-spacing: -.6px; white-space: nowrap; }
+.product-tagline { display: block; font-size: 11px; color: #64748b; margin-top: 1px; }
+.workspace-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 76px; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: #fff; }
+.workspace-content { max-width: 1260px; margin: 0 auto; padding: 28px 20px calc(104px + env(safe-area-inset-bottom)); min-width: 0; outline: none; }
+.workspace-content > div { min-width: 0; }
+.device-indicator { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: #526174; white-space: nowrap; }
+.device-indicator > span { width: 6px; height: 6px; border-radius: 50%; background: #087f8c; }
+.mobile-nav { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); position: fixed; z-index: 40; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #dbe3ec; }
+.mobile-nav-link { min-height: 66px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; color: #64748b; font-size: 11px; font-weight: 600; }
+.mobile-nav-active { color: rgb(var(--brand)); background: rgb(var(--brand) / .06); box-shadow: inset 0 2px rgb(var(--brand)); }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 100; transform: translateY(-150%); padding: 12px 18px; background: #18324f; color: white; border-radius: 8px; }
+.skip-link:focus { transform: translateY(0); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 .safe-b { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
+@media (min-width: 768px) {
+  .app-shell { padding-left: 256px; }
+  .app-sidebar { position: fixed; inset: 0 auto 0 0; width: 256px; display: flex; flex-direction: column; padding: 28px 18px 18px; border-right: 1px solid #dbe3ec; background: #fff; }
+  .workspace-identity { display: flex; gap: 10px; align-items: center; margin: 32px 0 24px; padding: 14px 10px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+  .workspace-initial { display: grid; place-items: center; flex-shrink: 0; height: 36px; width: 36px; border-radius: 8px; background: #edf3f6; color: #18324f; font-size: 12px; font-weight: 700; }
+  .sidebar-link { display: flex; gap: 12px; align-items: center; min-height: 66px; border-radius: 9px; padding: 11px 12px; color: #526174; font-size: 14px; }
+  .sidebar-link:hover { background: #f4f7fa; }
+  .sidebar-link-active { color: rgb(var(--brand)); background: rgb(var(--brand) / .07); }
+  .nav-description { display: block; margin-top: 2px; font-size: 11px; font-weight: 400; color: #64748b; }
+  .sidebar-storage { margin-top: auto; padding: 24px 10px 8px; font-size: 13px; }
+  .sidebar-storage > svg { color: #087f8c; margin-bottom: 10px; }
+  .sidebar-footnote { margin: 10px 10px 0; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #64748b; }
+  .workspace-header { min-height: 73px; padding: 20px 36px; }
+  .workspace-content { padding: 38px 36px 56px; }
+  .mobile-nav { display: none; }
+}
+@media (max-width: 359px) {
+  .workspace-header { padding: 14px 16px; }
+  .product-brand strong { font-size: 17px; }
+  .device-indicator { font-size: 10px; gap: 4px; }
+  .workspace-content { padding-left: 16px; padding-right: 16px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+  .app-sidebar, .workspace-header, .mobile-nav { background: #0f172a; border-color: #263449; }
+  .product-brand { color: #f1f5f9; }
+  .product-tagline, .device-indicator, .nav-description, .sidebar-footnote { color: #94a3b8; }
+  .workspace-identity, .sidebar-footnote { border-color: #263449; }
+  .workspace-initial { color: #cbd5e1; background: #263449; }
+  .sidebar-link { color: #cbd5e1; }
+  .sidebar-link:hover { background: #1e293b; }
+  .sidebar-link-active, .mobile-nav-active { color: #f1f5f9; background: rgb(var(--brand)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

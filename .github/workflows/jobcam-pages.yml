@@ -1,4 +1,4 @@
-name: JobCam – test & publish
+name: Estimate Cam – test & publish
 
 on:
   push:
@@ -55,4 +55,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: jobcam/dist
           force_orphan: true
-          commit_message: 'Publish JobCam ${{ github.sha }}'
+          commit_message: 'Publish Estimate Cam ${{ github.sha }}'

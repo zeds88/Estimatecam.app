@@ -1,8 +1,8 @@
-import { Camera, FolderOpen, Mic, Settings as Cog } from 'lucide-react'
+import { ArrowUpRight, Camera, FolderOpen, HardDrive, Mic, Settings as Cog } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { HashRouter, Link, NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { applyBrand } from './lib/brand'
 import { loadSettings } from './lib/db'
-import { HashRouter, NavLink, Route, Routes } from 'react-router-dom'
 import Capture from './screens/Capture'
 import ProjectDetail from './screens/ProjectDetail'
 import Projects from './screens/Projects'
@@ -11,45 +11,65 @@ import Walk from './screens/Walk'
 import AnalyticsScreenTracker from './components/AnalyticsScreenTracker'
 
 const NAV = [
-  { to: '/', label: 'Projects', icon: FolderOpen, end: true },
-  { to: '/capture', label: 'Capture', icon: Camera },
-  { to: '/walk', label: 'Walk', icon: Mic },
-  { to: '/settings', label: 'Settings', icon: Cog },
+  { to: '/', label: 'Projects', description: 'Photos, scopes & estimates', icon: FolderOpen, end: true },
+  { to: '/capture', label: 'Capture', description: 'Document the job', icon: Camera },
+  { to: '/walk', label: 'Walkthrough', description: 'Turn site notes into a plan', icon: Mic },
+  { to: '/settings', label: 'Settings', description: 'Your business & preferences', icon: Cog },
 ]
 
-export default function App() {
-  const [{ logo, name }, setBrand] = useState({ logo: '', name: 'JobCam' })
+function ProductMark() {
+  return <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="h-10 w-10 shrink-0" />
+}
+
+function Workspace() {
+  const { pathname } = useLocation()
+  const [{ logo, company }, setBrand] = useState({ logo: '', company: '' })
   useEffect(() => {
-    // re-theme on load and whenever Settings change (saveSettings dispatches this event)
+    let active = true
     const sync = () => loadSettings().then((s) => {
+      if (!active) return
       applyBrand(s.branding.color)
-      setBrand({ logo: /^data:image\//.test(s.branding.logo) ? s.branding.logo : '', name: s.companyName && s.companyName !== 'My Company' ? s.companyName : 'JobCam' })
-    })
+      setBrand({ logo: /^data:image\//.test(s.branding.logo) ? s.branding.logo : '', company: s.companyName && s.companyName !== 'My Company' ? s.companyName : '' })
+    }).catch(() => {})
     void sync()
     window.addEventListener('jobcam:settings', sync)
-    return () => window.removeEventListener('jobcam:settings', sync)
+    return () => { active = false; window.removeEventListener('jobcam:settings', sync) }
   }, [])
+  const current = pathname.startsWith('/p/') ? 'Project workspace' : NAV.find((item) => item.to === pathname)?.label ?? 'Projects'
   return (
-    <HashRouter>
-      <AnalyticsScreenTracker />
-      <div className="min-h-dvh md:pl-56">
-        <aside className="fixed inset-y-0 left-0 hidden w-56 flex-col gap-1 border-r border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 md:flex">
-          <div className="mb-4 flex items-center gap-2 px-2 text-lg font-extrabold">
-            {logo ? <img src={logo} alt="" className="h-9 max-w-[56px] object-contain" /> : <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand text-white"><Camera size={18} /></span>}
-            <span className="min-w-0 truncate">{name}</span>
-          </div>
-          {NAV.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${isActive ? 'bg-brand text-white' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-              <Icon size={18} /> {label}
+    <div className="app-shell">
+      <a href="#workspace-content" className="skip-link" onClick={(event) => { event.preventDefault(); document.getElementById('workspace-content')?.focus() }}>Skip to workspace</a>
+      <aside className="app-sidebar">
+        <Link to="/" className="product-brand" aria-label="Estimate Cam home">
+          <ProductMark />
+          <span><strong>Estimate Cam</strong><span className="product-tagline">From site visit to estimate</span></span>
+        </Link>
+        <div className="workspace-identity">
+          {logo ? <img src={logo} alt="" className="h-9 w-9 shrink-0 rounded-md object-contain" /> : <span className="workspace-initial" aria-hidden="true">{company ? company.charAt(0).toUpperCase() : 'EC'}</span>}
+          <div className="min-w-0"><p className="truncate font-semibold">{company || 'Your workspace'}</p><p className="text-xs text-slate-500 dark:text-slate-400">Stored on this device</p></div>
+        </div>
+        <nav aria-label="Main navigation" className="space-y-1">
+          {NAV.map(({ to, label, description, icon: Icon, end }) => (
+            <NavLink key={to} to={to} end={end} className={({ isActive }) => `sidebar-link ${isActive || (to === '/' && pathname.startsWith('/p/')) ? 'sidebar-link-active' : ''}`}>
+              <Icon size={20} strokeWidth={1.8} aria-hidden="true" /><span><span className="block font-semibold">{label}</span><span className="nav-description">{description}</span></span>
             </NavLink>
           ))}
-          <p className="mt-auto px-2 text-xs text-slate-500">Free &amp; open source.<br />Stored on this device. AI only runs when you ask.</p>
-        </aside>
-        <main className="mx-auto max-w-5xl p-4 pb-28 md:pb-8">
-          <div className="mb-3 flex items-center gap-2 font-extrabold md:hidden">
-            {logo ? <img src={logo} alt="" className="h-8 max-w-[48px] object-contain" /> : <span className="grid h-7 w-7 place-items-center rounded-lg bg-brand text-white"><Camera size={16} /></span>}
-            <span className="truncate">{name}</span>
-          </div>
+        </nav>
+        <div className="sidebar-storage">
+          <HardDrive size={20} aria-hidden="true" />
+          <p className="font-semibold">Your work stays with you</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">Projects are saved in this browser. Export a backup to keep a separate copy.</p>
+          <Link to="/settings" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-brand">Manage backups <ArrowUpRight size={15} aria-hidden="true" /></Link>
+        </div>
+        <p className="sidebar-footnote">Free &amp; open source</p>
+      </aside>
+      <div className="app-workspace">
+        <header className="workspace-header">
+          <Link to="/" className="product-brand md:hidden" aria-label="Estimate Cam home"><ProductMark /><strong>Estimate Cam</strong></Link>
+          <p className="hidden text-sm font-medium text-slate-500 md:block">{company || 'Estimate Cam'}<span className="mx-3 text-slate-300" aria-hidden="true">/</span><span className="text-slate-900 dark:text-slate-100">{current}</span></p>
+          <span className="device-indicator"><span aria-hidden="true" /> On this device</span>
+        </header>
+        <main id="workspace-content" tabIndex={-1} className="workspace-content">
           <Routes>
             <Route path="/" element={<Projects />} />
             <Route path="/p/:id" element={<ProjectDetail />} />
@@ -59,14 +79,18 @@ export default function App() {
             <Route path="*" element={<Projects />} />
           </Routes>
         </main>
-        <nav className="safe-b fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95 md:hidden">
-          {NAV.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} className={({ isActive }) => `flex flex-col items-center gap-0.5 py-2.5 text-[11px] font-semibold ${isActive ? 'text-brand' : 'text-slate-500'}`}>
-              <Icon size={22} /> {label}
-            </NavLink>
-          ))}
-        </nav>
       </div>
-    </HashRouter>
+      <nav aria-label="Mobile navigation" className="mobile-nav safe-b">
+        {NAV.map(({ to, label, icon: Icon, end }) => (
+          <NavLink key={to} to={to} end={end} className={({ isActive }) => `mobile-nav-link ${isActive || (to === '/' && pathname.startsWith('/p/')) ? 'mobile-nav-active' : ''}`}>
+            <Icon size={21} strokeWidth={1.8} aria-hidden="true" /><span>{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+    </div>
   )
+}
+
+export default function App() {
+  return <HashRouter><AnalyticsScreenTracker /><Workspace /></HashRouter>
 }

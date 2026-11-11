@@ -42,27 +42,75 @@ export default function SettingsScreen() {
   useEffect(() => { if (loaded) saveSettings(s) }, [s, loaded])
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(''), 4000) }
+  const showSection = (id: string) => {
+    const section = document.getElementById(id)
+    if (!section) return
+    if (section instanceof HTMLDetailsElement) section.open = true
+    section.tabIndex = -1
+    section.focus({ preventScroll: true })
+    section.scrollIntoView({ block: 'start' })
+  }
+
 
   return (
-    <div className="space-y-5">
-      <h1 className="text-2xl font-extrabold">Settings</h1>
-
-      <AnalyticsSettings />
-
-      <BrandingSettings s={s} setS={setS} />
-
+    <div className="space-y-6">
+      <header>
+        <h1 className="page-heading">Settings</h1>
+        <p className="page-description">Set up your business, protect your work, and choose optional tools. Changes save automatically on this device.</p>
+      </header>
+      <nav aria-label="Settings sections" className="flex flex-wrap gap-2">
+        <button className="btn btn-ghost" onClick={() => showSection('settings-business')}>Business</button>
+        <button className="btn btn-ghost" onClick={() => showSection('settings-backup')}>Backup</button>
+        <button className="btn btn-ghost" onClick={() => showSection('settings-templates')}>Templates</button>
+        <button className="btn btn-ghost" onClick={() => showSection('settings-price-book')}>Price book</button>
+        <button className="btn btn-ghost" onClick={() => showSection('settings-advanced')}>Optional tools</button>
+      </nav>
+      {msg && <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200" role="status">{msg}</p>}
+      <div id="settings-business" className="scroll-mt-6 space-y-4">
+        <BrandingSettings s={s} setS={setS} />
       <section className="card space-y-3">
-        <h2 className="font-bold">Defaults</h2>
+        <h2 className="section-heading">Project defaults</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Your name (comments)"><input className="input" value={s.author} onChange={(e) => setS({ ...s, author: e.target.value })} /></Field>
           <Field label="Default tax %"><input className="input" type="number" min={0} step="any" value={s.taxRate} onChange={(e) => setS({ ...s, taxRate: +e.target.value })} /></Field>
         </div>
       </section>
+      </div>
 
-      <section className="card space-y-3">
-        <h2 className="font-bold">My scope templates</h2>
-        <p className="text-sm text-slate-500">Your own fill-in-the-blank services and scopes of work. Start from a built-in one with <b>Customize</b> in a project's Scope tab, or write one from scratch.</p>
-        {s.customTemplates.length === 0 && <p className="text-sm text-slate-500">None yet.</p>}
+      <section id="settings-backup" className="card scroll-mt-6 space-y-3 border-l-4 border-l-brand">
+        <h2 className="section-heading">Backup &amp; restore</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Your data lives in this browser. Export a backup (photos included) before changing devices or app addresses. Backups contain private job data; keep them somewhere secure. API keys are excluded and must be entered on each device.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">Import merges records and replaces matching IDs and settings. Export your current backup first. Existing provider keys stay on this device.</p>
+        <div className="flex flex-wrap gap-2">
+          <button className="btn btn-primary" onClick={async () => {
+            const url = URL.createObjectURL(new Blob([await exportAll()], { type: 'application/json' }))
+            const a = document.createElement('a')
+            a.href = url; a.download = `estimate-cam-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click()
+            captureAnalytics('jobcam_backup_exported')
+            setTimeout(() => URL.revokeObjectURL(url), 10_000)
+            flash('Backup downloaded')
+          }}><Download size={18} /> Export backup</button>
+          <button className="btn" onClick={() => file.current?.click()}><Upload size={18} /> Import backup</button>
+          <input ref={file} hidden type="file" accept="application/json,.json" onChange={async (e) => {
+            const f = e.target.files?.[0]
+            e.target.value = ''
+            if (!f) return
+            if (!window.confirm('Import this backup? Matching records and settings will be replaced. Export your current backup first if you need to keep a copy.')) return
+            try { const c = await importAll(await f.text()); setS(await loadSettings()); flash(`Imported ${c.projects} projects, ${c.photos} photos`) } catch (err) { flash((err as Error).message) }
+          }} />
+        </div>
+        {storage && <p className="text-xs text-slate-500 dark:text-slate-400">Storage: {storage}.</p>}
+      </section>
+
+      <details id="settings-templates" className="card scroll-mt-6">
+        <summary className="cursor-pointer rounded-lg text-slate-700 dark:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <span className="section-heading">My scope templates</span>
+          <span className="section-copy mt-1 block">Customize the wording you reuse on proposals.</span>
+        </summary>
+        <div className="mt-5 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+
+        <p className="text-sm text-slate-500 dark:text-slate-400">Your own fill-in-the-blank services and scopes of work. Start from a built-in one with <b>Customize</b> in a project's Scope tab, or write one from scratch.</p>
+        {s.customTemplates.length === 0 && <p className="text-sm text-slate-500 dark:text-slate-400">None yet.</p>}
         <ul className="space-y-2">{s.customTemplates.map((t) => (
           <li key={t.id} className="flex items-center gap-2"><span className="min-w-0 flex-1 truncate font-semibold">{t.title}</span><button className="btn !py-1.5" onClick={() => setEditTpl(t)}>Edit</button></li>
         ))}</ul>
@@ -70,11 +118,17 @@ export default function SettingsScreen() {
         {editTpl && <TemplateEditor initial={editTpl === 'new' ? undefined : editTpl} trades={TRADES} onCancel={() => setEditTpl(null)}
           onSave={(t) => { setS({ ...s, customTemplates: s.customTemplates.some((x) => x.id === t.id) ? s.customTemplates.map((x) => (x.id === t.id ? t : x)) : [...s.customTemplates, t] }); setEditTpl(null) }}
           onDelete={editTpl !== 'new' ? () => { setS({ ...s, customTemplates: s.customTemplates.filter((x) => x.id !== editTpl.id) }); setEditTpl(null) } : undefined} />}
-      </section>
+        </div>
+      </details>
 
-      <section className="card space-y-3">
-        <h2 className="font-bold">Price book</h2>
-        <p className="text-sm text-slate-500">“Walk the job” matches these keywords in your narration and prices them automatically. Separate keywords with commas.</p>
+      <details id="settings-price-book" className="card scroll-mt-6">
+        <summary className="cursor-pointer rounded-lg text-slate-700 dark:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <span className="section-heading">Price book</span>
+          <span className="section-copy mt-1 block">Import or edit the rates used for walkthrough estimates.</span>
+        </summary>
+        <div className="mt-5 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+
+        <p className="text-sm text-slate-500 dark:text-slate-400">Walkthrough matches these keywords to suggest estimate items using your rates. Review the quantities and prices before using an estimate. Separate keywords with commas.</p>
         {s.priceBook.map((p, i) => (
           <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_2fr_5rem_6rem_auto]">
             <input className="input col-span-2 sm:col-span-1" aria-label="Keywords" value={p.keywords.join(', ')} onChange={(e) => setS({ ...s, priceBook: s.priceBook.map((x, n) => (n === i ? { ...x, keywords: e.target.value.split(',').map((k) => k.trim()).filter(Boolean) } : x)) })} />
@@ -90,13 +144,24 @@ export default function SettingsScreen() {
           <button className="btn" onClick={() => downloadCsv(s.priceBook)}><Download size={16} /> Export CSV</button>
         </div>
         {importing && <PriceBookImport current={s.priceBook} onCancel={() => setImporting(false)} onApply={(book) => { setS({ ...s, priceBook: book }); setImporting(false); flash(`Price book now has ${book.length} items`) }} />}
-      </section>
+        </div>
+      </details>
 
-      <section className="card space-y-3">
-        <h2 className="font-bold">AI analysis &amp; reasoning</h2>
-        <p className="text-sm text-slate-500">
-          Bring your own model. Photos (and sampled video frames) are sent to the provider <b>only when you press Analyze</b>, straight from your browser – never through us.
-          Leave blank to stay fully offline. For a private setup use a local vision model (e.g. Ollama <code>llava</code> / <code>qwen2.5vl</code>).
+      <div id="settings-advanced" className="scroll-mt-6 space-y-4">
+        <div>
+          <h2 className="section-heading">Optional tools</h2>
+          <p className="section-copy">Configure these when you need them. Photos, projects, and reports work without an AI provider.</p>
+        </div>
+      <details id="settings-ai" className="card scroll-mt-6">
+        <summary className="cursor-pointer rounded-lg text-slate-700 dark:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <span className="section-heading">AI analysis &amp; reasoning</span>
+          <span className="section-copy mt-1 block">Connect a model to review your job photos and videos.</span>
+        </summary>
+        <div className="mt-5 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Optional: connect your own model to review photos and videos. Images are sent directly from your browser to that provider <b>only when you press Analyze</b>. Provider charges may apply.
+          You can use the rest of Estimate Cam without configuring AI.
         </p>
         <div className="flex flex-wrap gap-2">
           {AI_PRESETS.map((p) => (
@@ -118,13 +183,19 @@ export default function SettingsScreen() {
             setTesting(true)
             try { await callModel([{ type: 'text', text: 'Reply with the single word: ok' }], s.ai, fetch, 20); flash('Connection works ✓') } catch (e) { flash((e as Error).message) } finally { setTesting(false) }
           }}>{testing ? 'Testing…' : 'Test connection'}</button>
-          <span className="text-xs text-slate-500">Browsers may block calls to providers without CORS support; Anthropic and local servers (set <code>OLLAMA_ORIGINS=*</code>) work.</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Browsers may block calls to providers without CORS support; Anthropic and local servers (set <code>OLLAMA_ORIGINS=*</code>) work.</span>
         </div>
-      </section>
+        </div>
+      </details>
 
-      <section className="card space-y-3">
-        <h2 className="font-bold">Video narration (speech-to-text)</h2>
-        <p className="text-sm text-slate-500">Turns what you say in a video into a searchable, time-stamped transcript the AI can reason over. The default runs <b>on this device</b> with Whisper – audio never leaves your phone.</p>
+      <details id="settings-narration" className="card scroll-mt-6">
+        <summary className="cursor-pointer rounded-lg text-slate-700 dark:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <span className="section-heading">Video narration (speech-to-text)</span>
+          <span className="section-copy mt-1 block">Choose how video audio becomes a transcript.</span>
+        </summary>
+        <div className="mt-5 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+
+        <p className="text-sm text-slate-500 dark:text-slate-400">Create a searchable transcript from a video. On-device Whisper keeps audio on this device after its initial model download. Choosing a transcription API sends audio to that provider and may incur charges.</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Engine">
             <select className="input" value={s.transcription.engine} onChange={(e) => setS({ ...s, transcription: { ...s.transcription, engine: e.target.value as Settings['transcription']['engine'] } })}>
@@ -146,40 +217,25 @@ export default function SettingsScreen() {
             <Field label="API key (stored only on this device)"><input className="input" type="password" autoComplete="off" value={s.transcription.apiKey} onChange={(e) => setS({ ...s, transcription: { ...s.transcription, apiKey: e.target.value } })} /></Field>
           </>)}
         </div>
-        <p className="text-xs text-slate-500">Using Spanish or mixed languages? Pick a <i>multilingual</i> model. English-only models are faster and more accurate for English.</p>
-      </section>
-
-      <section className="card space-y-3">
-        <h2 className="font-bold">Backup &amp; restore</h2>
-        <p className="text-sm text-slate-500">Your data lives in this browser. Export a backup (photos included) before changing devices or app addresses. Backups contain private job data; keep them somewhere secure. API keys are excluded and must be entered on each device.</p>
-        <p className="text-xs text-slate-500">Import merges records and replaces matching IDs and settings. Export your current backup first. Existing provider keys stay on this device.</p>
-        <div className="flex flex-wrap gap-2">
-          <button className="btn" onClick={async () => {
-            const url = URL.createObjectURL(new Blob([await exportAll()], { type: 'application/json' }))
-            const a = document.createElement('a')
-            a.href = url; a.download = `jobcam-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click()
-            captureAnalytics('jobcam_backup_exported')
-            setTimeout(() => URL.revokeObjectURL(url), 10_000)
-            flash('Backup downloaded')
-          }}><Download size={18} /> Export backup</button>
-          <button className="btn" onClick={() => file.current?.click()}><Upload size={18} /> Import backup</button>
-          <input ref={file} hidden type="file" accept="application/json,.json" onChange={async (e) => {
-            const f = e.target.files?.[0]
-            e.target.value = ''
-            if (!f) return
-            if (!window.confirm('Import this backup? Matching records and settings will be replaced. Export your current backup first if you need to keep a copy.')) return
-            try { const c = await importAll(await f.text()); setS(await loadSettings()); flash(`Imported ${c.projects} projects, ${c.photos} photos`) } catch (err) { flash((err as Error).message) }
-          }} />
+        <p className="text-xs text-slate-500 dark:text-slate-400">Using Spanish or mixed languages? Pick a <i>multilingual</i> model. English-only models are faster and more accurate for English.</p>
         </div>
-        {storage && <p className="text-xs text-slate-500">Storage: {storage}.</p>}
-        {msg && <p className={`text-sm font-semibold ${/fail|error|set |choose|no text|not /i.test(msg) ? 'text-red-600' : 'text-green-600'}`} role="status">{msg}</p>}
-      </section>
-      <section className="card space-y-3">
-        <h2 className="font-bold">Troubleshooting</h2>
-        <p className="text-sm text-slate-500">Photos or videos not importing? Run the self-test — it shows exactly what this device can’t do. Build {__BUILD__}.</p>
+      </details>
+
+      <details id="settings-troubleshooting" className="card scroll-mt-6">
+        <summary className="cursor-pointer rounded-lg text-slate-700 dark:text-slate-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand">
+          <span className="section-heading">Troubleshooting</span>
+          <span className="section-copy mt-1 block">Check what this browser supports.</span>
+        </summary>
+        <div className="mt-5 space-y-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+
+        <p className="text-sm text-slate-500 dark:text-slate-400">Check camera, media import, and storage support in this browser. Build {__BUILD__}.</p>
         <button className="btn" onClick={async () => { setChecks(null); setChecks(await diagnose()) }}>Run self-test</button>
         {checks && <ul className="space-y-1 text-sm" role="status">{checks.map((c) => <li key={c.name} className={c.ok ? 'text-green-700' : 'font-semibold text-red-600'}>{c.ok ? '✓' : '✗'} {c.name}: {c.detail}</li>)}</ul>}
-      </section>
+        </div>
+      </details>
+      </div>
+
+      <AnalyticsSettings />
     </div>
   )
 }

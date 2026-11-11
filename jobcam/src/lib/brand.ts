@@ -1,6 +1,6 @@
 /** Brand colour handling: keep any chosen colour readable with white text, and expose it to CSS. */
 
-export const BRAND_SWATCHES = ['#2563eb', '#0f766e', '#15803d', '#b45309', '#c2410c', '#b91c1c', '#7e22ce', '#334155']
+export const BRAND_SWATCHES = ['#18324f', '#0f766e', '#15803d', '#b45309', '#c2410c', '#b91c1c', '#7e22ce', '#334155']
 
 export function parseHex(hex: string): [number, number, number] | null {
   const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(hex.trim())
@@ -21,9 +21,9 @@ export function luminance([r, g, b]: [number, number, number]): number {
 /** Contrast ratio against white text. */
 export const contrastOnWhite = (rgb: [number, number, number]) => 1.05 / (luminance(rgb) + 0.05)
 
-/** Darken a colour (never hue-shift) until white text on it reaches WCAG AA (4.5:1). Invalid input -> default blue. */
+/** Darken a colour (never hue-shift) until white text on it reaches WCAG AA (4.5:1). Invalid input -> default navy. */
 export function readableBrand(hex: string): { hex: string; rgb: [number, number, number] } {
-  let rgb = parseHex(hex) ?? [37, 99, 235]
+  let rgb = parseHex(hex) ?? [24, 50, 79]
   for (let i = 0; i < 40 && contrastOnWhite(rgb) < 4.5; i++) rgb = rgb.map((v) => v * 0.93) as [number, number, number]
   return { hex: toHex(rgb), rgb }
 }

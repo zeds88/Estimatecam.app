@@ -26,7 +26,7 @@ export default function Capture() {
   const stream = useRef<MediaStream | null>(null)
   const file = useRef<HTMLInputElement>(null)
 
-  useEffect(() => { warmPosition() }, [])
+  useEffect(() => { if (projects?.length) warmPosition() }, [projects])
 
   useEffect(() => {
     if (!projectId && projects?.length) setProjectId(projects[0].id)
@@ -40,8 +40,9 @@ export default function Capture() {
     stream.current = null
     if (video.current) video.current.srcObject = null
     setCamError('')
+    if (!projects?.length) return
     const startCam = async () => {
-      if (!navigator.mediaDevices?.getUserMedia) { setCamError('Live camera is not available here – use "Pick photos" instead.'); return }
+      if (!navigator.mediaDevices?.getUserMedia) { setCamError('Live camera is unavailable. Use the upload button below to add photos or videos.'); return }
       const video_ = { facingMode: facing, width: { ideal: mode === 'video' ? 1920 : 3840 }, height: { ideal: mode === 'video' ? 1080 : 2160 } }
       try {
         try {
@@ -55,7 +56,7 @@ export default function Capture() {
         stream.current = acquired
         if (video.current) video.current.srcObject = acquired
       } catch {
-        if (!cancelled) setCamError('Camera permission denied or unavailable – use "Pick photos" instead.')
+        if (!cancelled) setCamError('Camera access is unavailable. Allow camera access in your browser, or use the upload button below.')
       }
     }
     void startCam()
@@ -64,10 +65,10 @@ export default function Capture() {
       acquired?.getTracks().forEach((t) => t.stop())
       if (stream.current === acquired) stream.current = null
     }
-  }, [facing, mode])
+  }, [facing, mode, projects])
 
   const saveBlob = async (b: Blob) => {
-    if (!projectId) { setStatus('Create or pick a project first'); return }
+    if (!projectId) { setStatus('Choose an active project first.'); return }
     try { await addMedia(projectId, b, { tags }) } catch (e) { setStatus((e as Error).message); return }
     setCount((c) => c + 1)
     setStatus('Saved ✓')
@@ -112,19 +113,30 @@ export default function Capture() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-extrabold">Capture</h1>
+      <header><h1 className="page-heading">Capture</h1><p className="page-description">Choose a project, then take a photo, record a video, or upload files.</p></header>
       {projects && projects.length === 0 ? (
-        <div className="card">No active projects. <Link className="font-semibold text-brand" to="/">Create one first →</Link></div>
+        <div className="card space-y-3">
+          <h2 className="section-heading">Start with a project</h2>
+          <p className="section-copy">Create an active project from Projects, then return to Capture to add photos and videos.</p>
+          <Link className="btn btn-primary" to="/">Go to Projects</Link>
+        </div>
       ) : (
-        <select className="input" value={projectId} onChange={(e) => setProjectId(e.target.value)} aria-label="Project">
-          {projects?.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select>
+        <label className="block"><span className="label">1. Choose a project</span>
+          <select className="input" value={projectId} disabled={recording || !projects} onChange={(e) => setProjectId(e.target.value)} aria-label="Project">
+            {!projects && <option value="">Loading projects…</option>}
+            {projects?.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </select>
+        </label>
       )}
 
-      <div className="flex gap-2">
+      {!!projects?.length && <>
+      <div className="space-y-2">
+      <p className="label">2. Capture or upload</p>
+      <div className="flex gap-2" role="group" aria-label="Capture mode">
         {(['photo', 'video'] as const).map((m) => (
-          <button key={m} className={`chip !px-4 !py-2 capitalize ${mode === m ? 'chip-on' : ''}`} disabled={recording} onClick={() => setMode(m)}>{m}</button>
+          <button key={m} className={`chip !px-4 !py-2 capitalize ${mode === m ? 'chip-on' : ''}`} disabled={recording} aria-pressed={mode === m} onClick={() => setMode(m)}>{m}</button>
         ))}
+      </div>
       </div>
 
       <div className="relative overflow-hidden rounded-2xl bg-black">
@@ -132,7 +144,7 @@ export default function Capture() {
         {camError && <p className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-white">{camError}</p>}
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-around bg-gradient-to-t from-black/70 p-4">
           <label className="btn cursor-pointer !rounded-full !p-3" aria-label="Pick files"><ImagePlus size={22} />
-            <input ref={file} type="file" accept="image/*,video/*,.heic,.heif,.mov,.mp4,.m4v,.webm" multiple className="sr-only" aria-label="Pick photos or videos" onChange={async (e) => {
+            <input ref={file} type="file" accept="image/*,video/*,.heic,.heif,.mov,.mp4,.m4v,.webm" multiple className="sr-only" aria-label="Pick photos or videos" disabled={recording || !projectId} onChange={async (e) => {
               const files = Array.from(e.target.files ?? [])
               e.target.value = ''
               for (const f of files) await saveBlob(f)
@@ -154,10 +166,11 @@ export default function Capture() {
       </div>
 
       <div>
-        <span className="label">Tag the next photos</span>
+        <span className="label">Tags for your next photos or videos</span>
         <TagPicker value={tags} onChange={setTags} />
       </div>
-      <p className="text-xs text-slate-500">Photos and videos are timestamped, GPS-stamped (if you allow it) and stored on this device. They are only sent to an AI provider if you press Analyze.</p>
+      <p className="section-copy">Photos and videos save to this device. Location is added when permission is available. To review your media, open the project from Projects.</p>
+      </>}
     </div>
   )
 }
