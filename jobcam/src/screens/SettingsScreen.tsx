@@ -151,7 +151,8 @@ export default function SettingsScreen() {
 
       <section className="card space-y-3">
         <h2 className="font-bold">Backup &amp; restore</h2>
-        <p className="text-sm text-slate-500">Your data lives in this browser. Export a full backup (photos included) to move devices or keep a copy.</p>
+        <p className="text-sm text-slate-500">Your data lives in this browser. Export a backup (photos included) before changing devices or app addresses. Backups contain private job data; keep them somewhere secure. API keys are excluded and must be entered on each device.</p>
+        <p className="text-xs text-slate-500">Import merges records and replaces matching IDs and settings. Export your current backup first. Existing provider keys stay on this device.</p>
         <div className="flex flex-wrap gap-2">
           <button className="btn" onClick={async () => {
             const url = URL.createObjectURL(new Blob([await exportAll()], { type: 'application/json' }))
@@ -166,7 +167,8 @@ export default function SettingsScreen() {
             const f = e.target.files?.[0]
             e.target.value = ''
             if (!f) return
-            try { const c = await importAll(await f.text()); flash(`Imported ${c.projects} projects, ${c.photos} photos`) } catch (err) { flash((err as Error).message) }
+            if (!window.confirm('Import this backup? Matching records and settings will be replaced. Export your current backup first if you need to keep a copy.')) return
+            try { const c = await importAll(await f.text()); setS(await loadSettings()); flash(`Imported ${c.projects} projects, ${c.photos} photos`) } catch (err) { flash((err as Error).message) }
           }} />
         </div>
         {storage && <p className="text-xs text-slate-500">Storage: {storage}.</p>}

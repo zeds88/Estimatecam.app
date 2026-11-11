@@ -79,7 +79,11 @@ export const customerEstimates = (estimates: Estimate[]) => estimates.filter((e)
 function estimateHtml(estimates: Estimate[]): string {
   return customerEstimates(estimates)
     .map((e) => {
+      if (!Number.isFinite(e.taxRate) || e.items.some((i) => !Number.isFinite(i.qty) || !Number.isFinite(i.unitPrice))) {
+        throw new Error('An estimate has invalid quantities, prices or tax. Review it before exporting.')
+      }
       const t = totals(e)
+      if (Object.values(t).some((n) => !Number.isFinite(n))) throw new Error('An estimate total is too large. Review it before exporting.')
       return `<h3>${esc(e.title)}</h3><table><thead><tr><th>Item</th><th>Qty</th><th>Unit</th><th>Price</th><th>Total</th></tr></thead><tbody>${e.items
         .map((i) => `<tr><td>${esc(i.description)}</td><td>${i.qty}</td><td>${esc(i.unit)}</td><td>${money(i.unitPrice)}</td><td>${money(i.qty * i.unitPrice)}</td></tr>`)
         .join('')}</tbody><tfoot><tr><td colspan="4">Subtotal</td><td>${money(t.subtotal)}</td></tr>${
@@ -114,7 +118,7 @@ export function buildReportHtml(r: ReportInput): string {
   const { project: p, settings: { branding: b, companyName } } = r
   const photoHtml = r.photos
     .map(
-      (ph) => `<figure><img src="${ph.src}" alt="${esc(ph.caption || 'Job photo')}">
+      (ph) => `<figure><img src="${safeImg(ph.src)}" alt="${esc(ph.caption || 'Job photo')}">
 <figcaption>${ph.isVideo ? `<span class="tag-pill">▶ Video ${esc(ph.duration ?? '')}</span><br>` : ''}${ph.caption ? `<b>${esc(ph.caption)}</b><br>` : ''}${esc(new Date(ph.takenAt).toLocaleString())}${
         ph.lat !== undefined && ph.lng !== undefined ? ` · ${ph.lat.toFixed(5)}, ${ph.lng.toFixed(5)}` : ''
       }${ph.tags.length ? `<br>${ph.tags.map((t) => `<span class="tag-pill">${esc(t)}</span>`).join(' ')}` : ''}${

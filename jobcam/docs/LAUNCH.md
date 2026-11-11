@@ -49,6 +49,24 @@ Rollback: revert the release commit on `main` and let CI republish. Keep Indexed
 unchanged. Confirm the previous build on the final URL. A hosting-origin change does not move a
 user's IndexedDB: require backup/export before any domain migration.
 
+## Release hardening
+
+Portable backups exclude AI/transcription API keys. Imports ignore keys from older backups and
+preserve each existing keyed provider configuration, including its endpoint. Backups still contain
+private job content and must be stored securely. Restore validates and decodes the file before one
+atomic database write; matching records and settings are replaced only after confirmation.
+
+The app shell is cached during service-worker installation, including on the first visit. Wait for
+installation to finish before going offline. Optional AI, speech models and analytics remain lazy;
+external services still need a connection. The browser's Dictate speech service may send audio to
+its provider. Organizing typed walkthrough text happens locally.
+
+Vercel deployment target: AGENT88 / `estimatecam`, application root `jobcam/`, Node 22, with the
+same `npm ci` / `npm run build` / `dist` settings. Set `VITE_POSTHOG_PROJECT_TOKEN`,
+`VITE_POSTHOG_HOST`, and `VITE_POSTHOG_ENVIRONMENT=production` using public browser configuration.
+Keep secret provider credentials out of deployment variables and browser builds. Check the final
+build ID, security headers, first-use offline reload and fresh-browser workflow after every release.
+
 ## Analytics contract
 
 Project: PostHog 703316 (currently named Default project). Consent is off by default, stored

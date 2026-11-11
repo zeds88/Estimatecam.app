@@ -55,13 +55,14 @@ export default function Walk() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-extrabold">Walk the job</h1>
-        <p className="text-sm text-slate-500">Talk through the site. JobCam sorts what you say into issues, a punch list and a priced estimate – on-device, no cloud.</p>
+        <p className="text-sm text-slate-500">Type or dictate a site walkthrough. JobCam organizes the text on this device into issues, a punch list and an estimate using your price book. Review the results before using them.</p>
       </div>
 
       <div className="card space-y-3">
         <textarea className="input min-h-40" value={text} onChange={(e) => setText(e.target.value)} placeholder="“Walking the job at the Smith residence, 12 Main Street. Two broken sprinkler heads out front…”" aria-label="Narration" />
         {dict.interim && <p className="text-sm italic text-slate-500">…{dict.interim}</p>}
         {dict.error && <p className="text-sm text-red-600">Mic error: {dict.error}</p>}
+        {dict.supported && <p className="text-xs text-slate-500">Dictate uses your browser’s speech service, which may send audio to its provider and need an internet connection. Type instead to keep this walkthrough offline.</p>}
         <div className="flex flex-wrap gap-2">
           {dict.supported ? (
             <button className={`btn ${dict.listening ? 'btn-danger' : ''}`} onClick={dict.listening ? dict.stop : dict.start}>
