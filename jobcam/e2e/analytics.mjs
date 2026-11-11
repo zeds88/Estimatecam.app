@@ -55,7 +55,7 @@ try {
   }
   await page.goto(`http://localhost:${port}/?private=LEAK_QUERY&__posthog_debug=true`)
   await page.getByText('No projects yet').waitFor()
-  await page.getByRole('button', { name: 'New', exact: true }).click()
+  await page.getByRole('button', { name: 'New project', exact: true }).click()
   await page.getByLabel('Project name').fill('LEAK_PROJECT_BEFORE_CONSENT')
   await page.getByRole('button', { name: 'Save', exact: true }).click()
   await page.getByRole('heading', { name: 'LEAK_PROJECT_BEFORE_CONSENT' }).waitFor()
@@ -68,7 +68,7 @@ try {
   await consent.check()
   await waitFor(() => events.some((e) => e.event === 'jobcam_app_opened'))
   await page.getByRole('link', { name: 'Projects' }).last().click()
-  await page.getByRole('button', { name: 'New', exact: true }).click()
+  await page.getByRole('button', { name: 'New project', exact: true }).click()
   await page.getByLabel('Project name').fill('LEAK_PROJECT_AFTER_CONSENT')
   await page.getByLabel('Address', { exact: true }).fill('LEAK_CUSTOMER_ADDRESS')
   await page.getByLabel('Email', { exact: true }).fill('LEAK_EMAIL@example.test')
@@ -95,7 +95,7 @@ try {
   await consent.uncheck()
   const sent = events.length
   await page.getByRole('link', { name: 'Projects' }).last().click()
-  await page.getByRole('button', { name: 'New', exact: true }).click()
+  await page.getByRole('button', { name: 'New project', exact: true }).click()
   await page.getByLabel('Project name').fill('LEAK_AFTER_OPT_OUT')
   await page.getByLabel('Project name').press('Enter')
   await page.getByRole('heading', { name: 'LEAK_AFTER_OPT_OUT' }).waitFor()

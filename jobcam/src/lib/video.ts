@@ -13,7 +13,7 @@ export interface LoadedVideo {
 }
 
 export const UNPLAYABLE =
-  'This browser can’t decode this video’s picture (common for iPhone HEVC .mov files outside Safari). The file is saved and you can download the original; to view it here, record with iPhone Settings → Camera → Formats → Most Compatible, or open JobCam in Safari.'
+  'This browser can’t decode this video’s picture (common for iPhone HEVC .mov files outside Safari). The file is saved and you can download the original; to view it here, record with iPhone Settings → Camera → Formats → Most Compatible, or open Estimate Cam in Safari.'
 
 /**
  * Resolves as soon as we know something useful, and never hangs: iOS Safari won't fetch video data for

@@ -1,4 +1,4 @@
-# JobCam
+# Estimate Cam
 
 Free, open-source, **local-first** job site photo documentation for contractors and
 field crews. Capture photos, mark them up, track checklists and estimates, and send
@@ -18,6 +18,8 @@ npm run build      # static site in dist/ – host anywhere (Vercel, Netlify, S3
 ```
 
 ## Hosted version
+Use **[Estimate Cam](https://estimatecam.com/)** on your phone or computer.
+
 Every push to `main` is tested, built and published to **GitHub Pages** by
 `.github/workflows/jobcam-pages.yml` → `https://<owner>.github.io/<repo>/`
 (one-time setup: repo **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**).
@@ -29,7 +31,7 @@ Open it on a phone and "Add to Home Screen" – it installs as an offline PWA.
 
 ## What's in v0.1
 
-| Capability | JobCam v0.1 |
+| Capability | Estimate Cam v0.1 |
 |---|---|
 | Projects (address, customer, status, search incl. photo captions & tags) | ✅ |
 | Live camera, rapid multi-shot, front/back, tag-as-you-shoot | ✅ |
@@ -61,7 +63,7 @@ Open it on a phone and "Add to Home Screen" – it installs as an offline PWA.
 | Full backup / restore (JSON, photos included) | ✅ |
 | Offline PWA, light/dark | ✅ |
 
-### Where JobCam is different on purpose
+### Where Estimate Cam is different on purpose
 - **Your job records stay on your device.** Photos and videos are stored in IndexedDB. Job content leaves
   the device only when *you* press Analyze / Review (then only that item's downscaled frames, or the
   text digest for a job review, go straight from your browser to the provider you configured) or
@@ -74,7 +76,7 @@ Open it on a phone and "Add to Home Screen" – it installs as an offline PWA.
   `llava` / `qwen2.5vl`, LM Studio) for fully private analysis. No middleman, no markup.
 - **AI shows its work.** Every analysis lists the evidence it saw and a reasoning trace, and is
   labelled with the model and confidence so you can verify before it reaches a customer.
-- **Free forever, MIT licensed.** No per-user pricing, no storage caps beyond your device.
+- **Free and MIT licensed.** The current app has no per-user pricing or storage caps beyond your device.
 - **Annotations never touch the original.** Markup is stored as vectors and burned in only on export.
 
 ### Honest gaps (not built yet)

@@ -145,39 +145,47 @@ export default function ProjectDetail() {
   const TABS: { key: Tab; label: string; icon: typeof Images; n?: number }[] = [
     { key: 'photos', label: 'Photos', icon: Images, n: photos.length },
     { key: 'scope', label: 'Scope', icon: ClipboardList, n: scopes.length },
-    { key: 'checklists', label: 'Checklists', icon: ListChecks, n: checklists.length },
     { key: 'estimate', label: 'Estimate', icon: Receipt, n: estimates.length },
+    { key: 'checklists', label: 'Checklists', icon: ListChecks, n: checklists.length },
     { key: 'activity', label: 'Activity', icon: MessageSquare, n: comments.length },
   ]
 
   return (
-    <div className="space-y-4">
-      <Link to="/" className="inline-flex items-center gap-1 text-sm font-semibold text-brand"><ArrowLeft size={16} /> Projects</Link>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h1 className="truncate text-2xl font-extrabold">{project.name}</h1>
-          <p className="text-sm text-slate-500">{[project.address, project.customer, project.phone].filter(Boolean).join(' · ') || 'No details yet'}</p>
-          <span className="chip mt-1 capitalize">{project.status}</span>
+    <div className="space-y-6">
+      <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#18324f] dark:text-slate-400 dark:hover:text-slate-100"><ArrowLeft size={16} /> Projects</Link>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 basis-56">
+          <h1 className="page-heading break-words">{project.name}</h1>
+          <p className="page-description break-words">{[project.address, project.customer, project.phone].filter(Boolean).join(' · ') || 'Add a location or customer in project details.'}</p>
+          <span className={`mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium capitalize ${project.status === 'active' ? 'bg-teal-50 text-teal-800 dark:bg-teal-950 dark:text-teal-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'}`}><span className={`h-1.5 w-1.5 rounded-full ${project.status === 'active' ? 'bg-[#087f8c]' : 'bg-slate-400'}`} />{project.status}</span>
         </div>
-        <div className="flex shrink-0 gap-2">
-          <button className="btn" onClick={() => setEditing(true)} aria-label="Edit project"><Pencil size={18} /></button>
-          <button className="btn btn-primary" onClick={() => makeReport('open')} disabled={!!busy}><FileText size={18} /> Report</button>
+        <div className="flex flex-wrap gap-2">
+          <button className="btn min-h-11 min-w-11" onClick={() => setEditing(true)} aria-label="Edit project"><Pencil size={18} /><span className="hidden sm:inline">Edit project</span></button>
+          <button className="btn btn-primary min-h-11" onClick={() => makeReport('open')} disabled={!!busy}><FileText size={18} /> Report</button>
         </div>
       </div>
-      <p className="text-xs text-slate-500">Reports include project details, notes, comments, photo locations, transcripts and AI findings when present, plus estimates marked for the customer proposal. Review the report and remove private content before sharing.</p>
-      {busy && <p className="text-sm text-slate-500">{busy}</p>}
+      <p className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-xs leading-relaxed text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"><span className="font-semibold text-slate-700 dark:text-slate-200">Before sharing.</span> Reports include project details, notes, comments, photo locations, transcripts and AI findings when present, plus estimates marked for the customer proposal. Review the report and remove private content before sharing.</p>
+      {busy && <p className="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-300" role="status">{busy}</p>}
 
-      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
+      <div className="space-y-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+        <p className="section-copy">Start with photos, define the scope, then review your estimate.</p>
+      <nav className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap" aria-label="Project sections">
         {TABS.map(({ key, label, icon: Icon, n }) => (
-          <button key={key} className={`chip !px-4 !py-2 ${tab === key ? 'chip-on' : ''}`} onClick={() => { setTab(key); reload() }}><Icon size={14} className="mr-1.5" /> {label}{n ? ` (${n})` : ''}</button>
+          <button key={key} className={`chip min-h-11 min-w-0 !px-2 !py-2 sm:!px-3.5 ${tab === key ? 'chip-on' : ''}`} aria-pressed={tab === key} onClick={() => { setTab(key); reload() }}><Icon size={16} className="mr-1.5 hidden sm:block" /> {label}{n ? ` (${n})` : ''}</button>
         ))}
+      </nav>
       </div>
 
       {tab === 'photos' && (
-        <div className="space-y-3">
+        <div className="space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h2 className="section-heading">Photos &amp; videos</h2>
+              <p className="section-copy mt-1">Document the job and keep the important details with each photo.</p>
+            </div>
           <div className="flex flex-wrap gap-2">
-            <Link to={`/capture?project=${id}`} className="btn btn-primary"><Camera size={18} /> Capture</Link>
-            <label className="btn cursor-pointer"><ImagePlus size={18} /> Upload
+            <Link to={`/capture?project=${id}`} className="btn btn-primary min-h-11"><Camera size={18} /> Capture</Link>
+            <label className="btn min-h-11 cursor-pointer"><ImagePlus size={18} /> Upload
               <input ref={file} type="file" accept="image/*,video/*,.heic,.heif,.mov,.mp4,.m4v,.webm" multiple className="sr-only" aria-label="Upload photos or videos" onChange={async (e) => {
                 const files = Array.from(e.target.files ?? [])
                 e.target.value = ''
@@ -191,13 +199,13 @@ export default function ProjectDetail() {
                 reload()
               }} />
             </label>
-            <button className="btn" disabled={!!busy || !settings.ai.model} title={settings.ai.model ? '' : 'Set up AI in Settings'} onClick={analyzeAll}><Sparkles size={18} /> Analyze all{photos.some((p) => !p.ai) ? ` (${photos.filter((p) => !p.ai).length})` : ''}</button>
-            <button className={`btn ${selecting ? 'btn-primary' : ''}`} onClick={() => { setSelecting((s) => !s); setPicked([]) }}><Columns2 size={18} /> Select</button>
+            <button className={`btn min-h-11 ${selecting ? 'btn-primary' : ''}`} aria-pressed={selecting} onClick={() => { setSelecting((s) => !s); setPicked([]) }}><Columns2 size={18} /> Select</button>
+          </div>
           </div>
           {allTags.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              <button className={`chip ${!filter ? 'chip-on' : ''}`} onClick={() => setFilter('')}>All</button>
-              {allTags.map((t) => <button key={t} className={`chip ${filter === t ? 'chip-on' : ''}`} onClick={() => setFilter(filter === t ? '' : t)}>{t}</button>)}
+              <button className={`chip min-h-11 ${!filter ? 'chip-on' : ''}`} aria-pressed={!filter} onClick={() => setFilter('')}>All</button>
+              {allTags.map((t) => <button key={t} className={`chip min-h-11 max-w-full break-words ${filter === t ? 'chip-on' : ''}`} aria-pressed={filter === t} onClick={() => setFilter(filter === t ? '' : t)}>{t}</button>)}
             </div>
           )}
           {selecting && (
@@ -207,7 +215,7 @@ export default function ProjectDetail() {
                 const [a, b] = picked.map((pid) => photos.find((p) => p.id === pid)!).sort((x, y) => x.takenAt - y.takenAt)
                 setComparing([a, b])
               }}>Before / after</button>
-              <button className="btn btn-danger" disabled={!picked.length} onClick={async () => {
+              <button className="btn btn-danger min-h-11 min-w-11" aria-label="Delete selected photos" disabled={!picked.length} onClick={async () => {
                 if (!window.confirm(`Delete ${picked.length} photo(s)?`)) return
                 for (const pid of picked) await remove('photos', pid)
                 setPicked([]); setSelecting(false); reload()
@@ -215,9 +223,11 @@ export default function ProjectDetail() {
             </div>
           )}
           {shown.length === 0 ? (
-            <Empty icon={<Images size={36} />} title="No photos or videos yet" hint="Capture with the camera or upload existing photos and videos." />
+            <Empty icon={<Images size={30} />} title={photos.length ? 'No photos match this tag' : 'No photos or videos yet'} hint={photos.length ? 'Choose another tag or show all photos and videos.' : 'Use Capture for a new photo, or Upload to add photos and videos from this device.'}>
+              {photos.length > 0 && <button className="btn min-h-11" onClick={() => setFilter('')}>Clear photo filter</button>}
+            </Empty>
           ) : (
-            <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 lg:grid-cols-6">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {shown.map((p) => (
                 <button key={p.id} className="relative aspect-square overflow-hidden rounded-lg bg-slate-200 dark:bg-slate-800" onClick={() => (selecting ? setPicked((x) => (x.includes(p.id) ? x.filter((i) => i !== p.id) : [...x, p.id])) : setViewing(p.id))} aria-label={p.caption || (p.kind === 'video' ? 'Open video' : 'Open photo')}>
                   <Img blob={p.thumb} className="h-full w-full object-cover" />
@@ -231,6 +241,14 @@ export default function ProjectDetail() {
               ))}
             </div>
           )}
+          <details className="rounded-lg border border-slate-200 bg-white px-4 dark:border-slate-700 dark:bg-slate-900">
+            <summary className="flex min-h-12 cursor-pointer items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300"><Sparkles size={16} className="text-[#087f8c] dark:text-teal-400" /> Optional AI analysis <span className="ml-auto text-slate-400" aria-hidden="true">+</span></summary>
+            <div className="space-y-3 border-t border-slate-100 py-4 dark:border-slate-800">
+              <p className="section-copy">Analyze photos and sampled video frames with your configured provider. Review findings before using them in customer documents.</p>
+              <button className="btn min-h-11" disabled={!!busy || !settings.ai.model} title={settings.ai.model ? '' : 'Set up AI in Settings'} onClick={analyzeAll}><Sparkles size={18} /> Analyze all{photos.some((p) => !p.ai) ? ` (${photos.filter((p) => !p.ai).length})` : ''}</button>
+              {!settings.ai.model && <p className="text-xs text-slate-500">Set up an AI provider in Settings to use this optional feature.</p>}
+            </div>
+          </details>
         </div>
       )}
 
@@ -239,10 +257,11 @@ export default function ProjectDetail() {
       {tab === 'estimate' && <EstimateTab projectId={id} estimates={estimates} priceBook={settings.priceBook} taxRate={settings.taxRate} reload={reload} />}
 
       {tab === 'activity' && (
-        <div className="space-y-3">
-          <div className="card space-y-3 border-purple-300 dark:border-purple-900">
+        <div className="space-y-5">
+          <div><h2 className="section-heading">Activity &amp; updates</h2><p className="section-copy mt-1">Keep job notes together and prepare a summary for your report.</p></div>
+          <div className="card space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="flex items-center gap-1.5 font-bold text-purple-800 dark:text-purple-300"><Brain size={18} /> AI job review</h3><span className="flex-1" />
+              <h3 className="section-heading flex items-center gap-2"><Brain size={18} className="text-[#087f8c] dark:text-teal-400" /> AI job review</h3><span className="flex-1" />
               <button className="btn" disabled={!!busy || !settings.ai.model} onClick={doReview}><Sparkles size={16} /> {project.review ? 'Re-run review' : 'Review this job'}</button>
             </div>
             {!settings.ai.model && <p className="text-sm text-slate-500">Set up an AI provider in Settings to reason across all photos, videos and notes.</p>}
@@ -253,7 +272,7 @@ export default function ProjectDetail() {
                 {project.review.risks.length > 0 && <div><p className="label">Risks</p><ul className="list-inside list-disc">{project.review.risks.map((r, n) => <li key={n}>{r}</li>)}</ul></div>}
                 {project.review.nextSteps.length > 0 && <div><p className="label">Next steps</p><ol className="list-inside list-decimal">{project.review.nextSteps.map((r, n) => <li key={n}>{r}</li>)}</ol></div>}
                 {project.review.suggestedItems.length > 0 && <div><p className="label">Suggested billable items</p><ul className="list-inside list-disc">{project.review.suggestedItems.map((r, n) => <li key={n}>{r.qty} {r.unit} – {r.description}</li>)}</ul></div>}
-                <details><summary className="cursor-pointer font-semibold">How the AI reasoned</summary><p className="mt-1 text-slate-700 dark:text-slate-300">{project.review.reasoning}</p></details>
+                <details><summary className="flex min-h-11 cursor-pointer items-center font-medium">How the AI reasoned</summary><p className="mt-1 text-slate-600 dark:text-slate-300">{project.review.reasoning}</p></details>
                 <div className="flex flex-wrap gap-2">
                   {project.review.nextSteps.length > 0 && <button className="btn" onClick={() => addToPunchList('AI next steps', project.review!.nextSteps)}>Add next steps to checklist</button>}
                   {project.review.suggestedItems.length > 0 && <button className="btn" onClick={reviewToEstimate}>Create estimate from items</button>}
@@ -264,7 +283,7 @@ export default function ProjectDetail() {
           </div>
           <div className="card space-y-2">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-bold">Progress recap</h3><span className="flex-1" />
+              <h3 className="section-heading">Progress recap</h3><span className="flex-1" />
               <button className="btn" onClick={() => doRecap(false)}><Sparkles size={16} /> Summarize</button>
               {settings.ai.endpoint && <button className="btn" onClick={() => doRecap(true)}><Sparkles size={16} /> Polish with AI</button>}
             </div>
@@ -276,7 +295,7 @@ export default function ProjectDetail() {
               <p className="whitespace-pre-wrap text-sm">{c.text}</p>
             </div>
           ))}
-          <form className="flex gap-2" onSubmit={async (e) => {
+          <form className="flex flex-wrap gap-2 sm:flex-nowrap" onSubmit={async (e) => {
             e.preventDefault()
             const form = e.currentTarget
             const text = new FormData(form).get('text')?.toString().trim()
@@ -284,10 +303,10 @@ export default function ProjectDetail() {
             await put('comments', { id: uid(), projectId: id, author: settings.author, text, createdAt: Date.now() })
             form.reset(); reload()
           }}>
-            <input name="text" className="input" placeholder="Add a comment…" aria-label="Comment" />
+            <input name="text" className="input min-w-0 sm:flex-1" placeholder="Add a comment…" aria-label="Comment" />
             <button className="btn btn-primary" type="submit">Post</button>
           </form>
-          <div className="flex flex-wrap gap-2 pt-4">
+          <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-5 dark:border-slate-700">
             <button className="btn" onClick={() => makeReport('download')}>Download report (.html)</button>
             <button className="btn btn-danger" onClick={async () => { if (window.confirm('Delete this project and all its photos?')) { await deleteProject(id); nav('/') } }}><Trash2 size={16} /> Delete project</button>
           </div>

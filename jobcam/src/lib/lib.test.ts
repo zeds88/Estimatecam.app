@@ -109,7 +109,7 @@ describe('db + backup', () => {
   })
 
   it('rejects foreign files', async () => {
-    await expect(importAll('{"hello":1}')).rejects.toThrow('Not a JobCam backup')
+    await expect(importAll('{"hello":1}')).rejects.toThrow('Not an Estimate Cam backup')
   })
 })
 

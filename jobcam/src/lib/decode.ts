@@ -32,7 +32,7 @@ function viaImg(blob: Blob): Promise<Decoded> {
 export function friendlyImageError(name: string, type: string): string {
   const heic = /hei[cf]/i.test(type) || /\.hei[cf]$/i.test(name)
   return heic
-    ? `“${name}” is a HEIC photo, which this browser can’t open. Open JobCam in Safari on iPhone, or switch the phone to Settings → Camera → Formats → Most Compatible (or share the photo as JPEG).`
+    ? `“${name}” is a HEIC photo, which this browser can’t open. Open Estimate Cam in Safari on iPhone, or switch the phone to Settings → Camera → Formats → Most Compatible (or share the photo as JPEG).`
     : `“${name}” couldn’t be read as an image${type ? ` (${type})` : ''}. Try a JPEG or PNG.`
 }
 

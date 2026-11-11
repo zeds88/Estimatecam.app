@@ -54,31 +54,33 @@ export default function Walk() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-extrabold">Walk the job</h1>
-        <p className="text-sm text-slate-500">Type or dictate a site walkthrough. JobCam organizes the text on this device into issues, a punch list and an estimate using your price book. Review the results before using them.</p>
+        <h1 className="page-heading">Walkthrough</h1>
+        <p className="page-description">Describe the job, review the suggested work, then save it to a project. Estimate Cam organizes your notes on this device using your price book.</p>
       </div>
 
-      <div className="card space-y-3">
+      <section className="card space-y-3" aria-labelledby="walkthrough-notes-heading">
+        <div><h2 id="walkthrough-notes-heading" className="section-heading">1. Describe the job</h2><p className="section-copy">Include quantities, locations, and the work needed. You can type or dictate.</p></div>
         <textarea className="input min-h-40" value={text} onChange={(e) => setText(e.target.value)} placeholder="“Walking the job at the Smith residence, 12 Main Street. Two broken sprinkler heads out front…”" aria-label="Narration" />
-        {dict.interim && <p className="text-sm italic text-slate-500">…{dict.interim}</p>}
+        {dict.interim && <p className="text-sm italic text-slate-500 dark:text-slate-400">…{dict.interim}</p>}
         {dict.error && <p className="text-sm text-red-600">Mic error: {dict.error}</p>}
-        {dict.supported && <p className="text-xs text-slate-500">Dictate uses your browser’s speech service, which may send audio to its provider and need an internet connection. Type instead to keep this walkthrough offline.</p>}
+        {dict.supported && <p className="text-xs text-slate-500 dark:text-slate-400">Dictate uses your browser’s speech service, which may send audio to its provider and need an internet connection. Type instead to keep this walkthrough offline.</p>}
         <div className="flex flex-wrap gap-2">
           {dict.supported ? (
             <button className={`btn ${dict.listening ? 'btn-danger' : ''}`} onClick={dict.listening ? dict.stop : dict.start}>
               {dict.listening ? <><MicOff size={18} /> Stop</> : <><Mic size={18} /> Dictate</>}
             </button>
           ) : (
-            <span className="self-center text-xs text-slate-500">Voice input isn’t supported in this browser – type or use your keyboard’s dictation.</span>
+            <span className="self-center text-xs text-slate-500 dark:text-slate-400">Voice input isn’t supported in this browser – type or use your keyboard’s dictation.</span>
           )}
           <button className="btn" onClick={() => setText(SAMPLE)}>Try an example</button>
           <span className="flex-1" />
           <button className="btn btn-primary" disabled={!text.trim()} onClick={analyze}><Sparkles size={18} /> Organize</button>
         </div>
-      </div>
+      </section>
 
       {result && (
-        <div className="card space-y-4">
+        <section className="card space-y-4" aria-labelledby="walkthrough-review-heading">
+          <div><h2 id="walkthrough-review-heading" className="section-heading">2. Review the suggestions</h2><p className="section-copy">Check names, addresses, quantities, and rates. After saving, edit the punch list and estimate in the project.</p></div>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Customer"><input className="input" value={result.customer ?? ''} onChange={(e) => setResult({ ...result, customer: e.target.value })} /></Field>
             <Field label="Address"><input className="input" value={result.address ?? ''} onChange={(e) => setResult({ ...result, address: e.target.value })} /></Field>
@@ -94,14 +96,17 @@ export default function Walk() {
               </ul>
             </div>
           )}
-          <div className="flex flex-col gap-2 border-t border-slate-200 pt-3 dark:border-slate-800 sm:flex-row">
+          <div className="space-y-3 border-t border-slate-200 pt-4 dark:border-slate-800">
+            <h2 className="section-heading">3. Choose where to save</h2>
+            <div className="flex flex-col gap-2 sm:flex-row">
             <select className="input" value={target} onChange={(e) => setTarget(e.target.value)} aria-label="Save to">
               <option value="new">Create a new project</option>
               {projects?.map((p) => <option key={p.id} value={p.id}>Add to: {p.name}</option>)}
             </select>
             <button className="btn btn-primary shrink-0" onClick={save}><Check size={18} /> Save</button>
+            </div>
           </div>
-        </div>
+        </section>
       )}
     </div>
   )

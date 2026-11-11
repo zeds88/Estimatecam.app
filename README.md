@@ -1,13 +1,13 @@
-# JobCam
+# Estimate Cam
 
 Free, open-source, local-first job-site photo documentation for contractors and field crews.
 Create a project, capture or upload photos, mark up issues, and export a branded customer report.
 No account or subscription is required. Job records live in the browser; export backups to keep a copy.
 Optional AI uses your chosen provider, whose charges may apply.
 
-**[Try JobCam](https://zeds88.github.io/Estimatecam.app/)** · **[Full documentation](jobcam/README.md)** · **[Launch and operating guide](jobcam/docs/LAUNCH.md)**
+**[Try Estimate Cam](https://estimatecam.com/)** · **[Full documentation](jobcam/README.md)** · **[Launch and operating guide](jobcam/docs/LAUNCH.md)**
 
-## Develop JobCam
+## Develop Estimate Cam
 
 ```sh
 cd jobcam
@@ -16,17 +16,17 @@ npm run dev
 ```
 
 Run `npm test` and `npm run build` before shipping. See the app README for browser tests.
-JobCam is MIT licensed: [license](jobcam/LICENSE).
+Estimate Cam is MIT licensed: [license](jobcam/LICENSE).
 
 ## Deployment
 
-JobCam lives in `jobcam/` on the **main** branch. The workflow in
+Estimate Cam lives in `jobcam/` on the **main** branch. The workflow in
 `.github/workflows/jobcam-pages.yml` tests and publishes it to GitHub Pages.
 For other static hosts, set the project root to `jobcam` and output directory to `dist`.
 
 The repository's default branch
-currently contains a separate WaterWise irrigation prototype. Select **main** for JobCam work.
-The root Vite application is that prototype; do not deploy it as JobCam.
+currently contains a separate WaterWise irrigation prototype. Select **main** for Estimate Cam work.
+The root Vite application is that prototype; do not deploy it as Estimate Cam.
 
 ## Privacy and scope
 

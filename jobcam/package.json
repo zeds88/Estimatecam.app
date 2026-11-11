@@ -1,8 +1,8 @@
 {
-  "name": "jobcam",
+  "name": "estimate-cam",
   "private": true,
   "version": "0.1.0",
-  "description": "Free, open-source, local-first job site photo documentation",
+  "description": "Estimate Cam: jobsite photos, estimates and branded customer reports, stored on your device",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -8,7 +8,7 @@ export function downloadCsv(book: PriceBookEntry[]) {
   const url = URL.createObjectURL(new Blob([priceBookToCsv(book)], { type: 'text/csv' }))
   const a = document.createElement('a')
   a.href = url
-  a.download = 'jobcam-price-book.csv'
+  a.download = 'estimate-cam-price-book.csv'
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }

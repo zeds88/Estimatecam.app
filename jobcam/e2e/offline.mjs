@@ -41,7 +41,7 @@ try {
       assert.ok(cached.some((url) => /\/assets\/.*\.js$/.test(url)), 'static app JavaScript cached')
       assert.ok(cached.every((url) => url.startsWith(`${origin}${base}`)), 'only app-scope resources cached')
       assert.ok(cached.every((url) => !/transformers|\.wasm$|\/module-/.test(url)), 'optional AI and analytics downloads stay lazy')
-      await page.getByRole('button', { name: 'New', exact: true }).click()
+      await page.getByRole('button', { name: 'New project', exact: true }).click()
       await page.getByLabel('Project name').fill('Offline regression project')
       await page.getByRole('button', { name: 'Save', exact: true }).click()
       await page.getByRole('heading', { name: 'Offline regression project' }).waitFor()

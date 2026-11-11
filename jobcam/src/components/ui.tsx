@@ -1,20 +1,41 @@
 import { X } from 'lucide-react'
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { useObjectUrl } from '../lib/hooks'
 
 export function Modal({ title, onClose, children, wide }: { title?: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+  const dialog = useRef<HTMLDivElement>(null)
+  const close = useRef(onClose)
+  useEffect(() => { close.current = onClose }, [onClose])
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const focusable = () => Array.from(dialog.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled):not([type="hidden"]), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? []).filter((element) => element.getClientRects().length > 0)
+    const frame = requestAnimationFrame(() => {
+      if (!dialog.current?.contains(document.activeElement)) (dialog.current?.querySelector<HTMLElement>('[autofocus]') ?? focusable()[0] ?? dialog.current)?.focus()
+    })
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close.current(); return }
+      if (e.key !== 'Tab') return
+      const items = focusable()
+      const first = items[0], last = items[items.length - 1]
+      if (!first) { e.preventDefault(); dialog.current?.focus(); return }
+      if (e.shiftKey && (document.activeElement === first || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && (document.activeElement === last || !dialog.current?.contains(document.activeElement))) { e.preventDefault(); first.focus() }
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('keydown', onKey); document.body.style.overflow = overflow; previous?.focus() }
+  }, [])
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center" onClick={onClose}>
       <div
         role="dialog"
+        ref={dialog}
+        aria-modal="true"
+        tabIndex={-1}
         aria-label={title}
         onClick={(e) => e.stopPropagation()}
-        className={`safe-b max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl bg-white p-5 shadow-xl dark:bg-slate-900 sm:rounded-3xl ${wide ? 'sm:max-w-3xl' : 'sm:max-w-md'}`}
+        className={`safe-b max-h-[92dvh] w-full overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl dark:bg-slate-900 sm:rounded-2xl ${wide ? 'sm:max-w-3xl' : 'sm:max-w-lg'}`}
       >
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-bold">{title}</h2>
@@ -32,10 +53,10 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 
 export function Empty({ icon, title, hint, children }: { icon: ReactNode; title: string; hint?: string; children?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed border-slate-300 p-10 text-center text-slate-500 dark:border-slate-700">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-12 text-center text-slate-500 dark:border-slate-800 dark:bg-slate-900">
       {icon}
-      <p className="font-semibold text-slate-700 dark:text-slate-200">{title}</p>
-      {hint && <p className="max-w-xs text-sm">{hint}</p>}
+      <p className="text-lg font-semibold text-slate-800 dark:text-slate-200">{title}</p>
+      {hint && <p className="max-w-sm text-sm leading-relaxed">{hint}</p>}
       {children}
     </div>
   )

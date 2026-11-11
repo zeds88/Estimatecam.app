@@ -34,7 +34,7 @@ export function openDb(): Promise<IDBDatabase> {
     }
     req.onerror = () => reject(req.error ?? new Error('Could not open local storage'))
     // another (older) tab still has the database open: say so instead of hanging forever
-    req.onblocked = () => reject(new Error('JobCam is open in another tab or window. Close the other JobCam tabs, then reload.'))
+    req.onblocked = () => reject(new Error('Estimate Cam is open in another tab or window. Close the other Estimate Cam tabs, then reload.'))
   }).catch((e) => { dbPromise = null; throw e })
   dbPromise = opening
   return opening
@@ -130,7 +130,7 @@ export const listScopes = async (projectId: string) =>
   (await getByProject<ScopeDoc>('scopes', projectId)).sort((a, b) => a.createdAt - b.createdAt)
 
 // ── Settings ───────────────────────────────────────────────
-export const DEFAULT_BRANDING: Branding = { logo: '', color: '#2563eb', tagline: '', phone: '', email: '', website: '', address: '', license: '', terms: '', footer: '' }
+export const DEFAULT_BRANDING: Branding = { logo: '', color: '#18324f', tagline: '', phone: '', email: '', website: '', address: '', license: '', terms: '', footer: '' }
 
 export const SAMPLE_TERMS =
   'Payment: ____% deposit due at acceptance; balance due on completion. Pricing is valid for 30 days. Changes to the scope are documented in a signed change order before work begins. Late balances may incur interest as allowed by law.'

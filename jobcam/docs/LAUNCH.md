@@ -1,8 +1,8 @@
-# JobCam launch and operating guide
+# Estimate Cam launch and operating guide
 
 ## Product and audience
 
-JobCam is a free, MIT-licensed, local-first job-site documentation web app for contractors
+Estimate Cam is a free, MIT-licensed, local-first job-site documentation web app for contractors
 and field crews. The first product loop is: create a project → add photos → create a useful
 customer report. No account or backend is needed. AI is optional and uses the provider the
 user configures; external provider charges can apply. It is not a team-sync or customer-portal product.
@@ -12,12 +12,25 @@ workflow with a few people before promoting the much larger set of advanced feat
 
 ## Source of truth
 
-- Public app: https://zeds88.github.io/Estimatecam.app/.
+- Public app: https://estimatecam.com/.
+- Secondary GitHub Pages mirror: https://zeds88.github.io/Estimatecam.app/.
 - Release source: `main`, application root `jobcam/`.
 - Default repository branch currently points to a separate WaterWise prototype. Until the owner
-  chooses to change that setting, explicitly select `main` for JobCam work and link to its README.
+  chooses to change that setting, explicitly select `main` for Estimate Cam work and link to its README.
 - GitHub Pages publishes the built `jobcam/dist` from `gh-pages`.
-- Keep the separate WaterWise prototype intact. Do not deploy the root Vite project as JobCam.
+- Keep the separate WaterWise prototype intact. Do not deploy the root Vite project as Estimate Cam.
+
+## Public identity and compatibility
+
+The product name is **Estimate Cam**. Its navy (`#18324f`) and teal (`#149b91`) identity
+belongs to the app; the user's company name, logo and document colors remain their own.
+Public metadata, installation name and icons use the product name. Existing saved company
+colors are preserved; the navy default applies only when a saved color is absent or invalid.
+
+Internal `jobcam` identifiers remain unchanged: the IndexedDB database, backup format,
+analytics events and consent, window events, service-worker cache namespace and source paths.
+Older backups and existing local records must continue to work. Update labels and exported
+filenames without migrating these identifiers. Check both a fresh installation and existing data.
 
 ## Release checklist
 
@@ -37,7 +50,7 @@ workflow with a few people before promoting the much larger set of advanced feat
    backup/restore. Desktop Chromium emulation does not establish physical-device support.
 5. For analytics, configure `JOBCAM_POSTHOG_PROJECT_TOKEN` and `JOBCAM_POSTHOG_HOST` as repository
    variables. Use the project's public browser token and regional ingestion host. No personal API
-   key belongs in a browser build. Missing configuration disables analytics without breaking JobCam.
+   key belongs in a browser build. Missing configuration disables analytics without breaking Estimate Cam.
 6. Approve the PR and production release. Merging into `main` triggers test → separate release
    build → GitHub Pages publication. The workflow must never publish the browser-test build.
 7. Open the final public URL in a fresh browser and an existing installation. Verify the new build
@@ -105,20 +118,20 @@ opt-in-only counts as all visitors. Collect qualitative feedback to understand m
 
 Headline: **Job-site photos. Clear customer reports. Your files stay with you.**
 
-Description: JobCam helps contractors organize job photos, mark up issues and export branded
+Description: Estimate Cam helps contractors organize job photos, mark up issues and export branded
 reports from their browser. No account or subscription. Your job records stay on this device;
 back them up to keep a copy. AI is optional and uses your chosen provider.
 
-Primary call to action: **Try JobCam**
+Primary call to action: **Try Estimate Cam**
 Secondary: **View the source**
 
 Short launch post:
 
-> I’m opening up JobCam, a free, open-source tool for documenting jobs with photos and clear
+> I’m opening up Estimate Cam, a free, open-source tool for documenting jobs with photos and clear
 > customer reports. Create a project, add photos, mark up an issue and export a branded report.
 > No account or subscription. Job records are stored on your device, with backup/export available.
 > I’m looking for contractors willing to try it on a small test job and tell me where it gets in the way.
-> Try it: https://zeds88.github.io/Estimatecam.app/
+> Try it: https://estimatecam.com/
 
 Demo outline: create a sample project → upload two sample photos → mark up an issue → add your
 branding → export a report → show backup. Label all sample customer/job content as demo data.
@@ -133,7 +146,7 @@ No automated mass posting, outreach, ad launch or spending is authorized by this
 
 ### Release agent
 
-Inspect current main, CI and the live JobCam build. Choose the smallest change that fixes a verified
+Inspect current main, CI and the live Estimate Cam build. Choose the smallest change that fixes a verified
 issue. Implement locally, run the relevant unit and browser checks, and prepare a reviewable PR.
 Preserve IndexedDB data. Show proof, remaining physical-device gaps, and rollback steps. Obtain
 owner approval before merging or publishing. Never deploy the root WaterWise application.
