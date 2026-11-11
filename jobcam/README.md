@@ -21,7 +21,7 @@ npm run build      # static site in dist/ – host anywhere (Vercel, Netlify, S3
 Every push to `main` is tested, built and published to **GitHub Pages** by
 `.github/workflows/jobcam-pages.yml` → `https://<owner>.github.io/<repo>/`
 (one-time setup: repo **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**).
-It is a static site – there is no server to run or pay for – and everything stays in each user's browser.
+It is a static site – there is no app server to run. Job records stay in each user's browser; optional, off-by-default usage analytics is described below.
 Prefer Vercel/Netlify? Import the repo, set the root directory to `jobcam`; `vercel.json` is included.
 
 Open it on a phone and "Add to Home Screen" – it installs as an offline PWA.
@@ -62,10 +62,14 @@ Open it on a phone and "Add to Home Screen" – it installs as an offline PWA.
 | Offline PWA, light/dark | ✅ |
 
 ### Where JobCam is different on purpose
-- **Your data stays on your device.** Photos and videos are stored in IndexedDB. Nothing leaves
-  the device unless *you* press Analyze / Review (then only that item's downscaled frames, or the
+- **Your job records stay on your device.** Photos and videos are stored in IndexedDB. Job content leaves
+  the device only when *you* press Analyze / Review (then only that item's downscaled frames, or the
   text digest for a job review, go straight from your browser to the provider you configured) or
   you export a report.
+- **Usage analytics is optional.** Off by default. Settings → Privacy & usage analytics lets users
+  share feature event names and a random browser identifier with PostHog. This does not send job
+  content, photos, customer details, GPS, transcripts, prices or provider keys. No session replay.
+  Previously sent events are not deleted when a user opts out.
 - **Bring your own AI.** Claude, any OpenAI-compatible API, or a local vision model (Ollama
   `llava` / `qwen2.5vl`, LM Studio) for fully private analysis. No middleman, no markup.
 - **AI shows its work.** Every analysis lists the evidence it saw and a reasoning trace, and is
@@ -131,10 +135,27 @@ e2e/smoke.mjs   Playwright end-to-end test with a fake camera (fixtures in e2e/f
 Stack: React 19 · TypeScript · Vite · Tailwind 3 · IndexedDB · Web Speech API · Service Worker.
 
 ### Testing
-`npm test` runs 101 unit tests (AI request shapes, JSON recovery, WAV/transcripts, speech engines, the fill-in-the-blank engine, a data-lint over every built-in template, branded document escaping, brand-color contrast, and the v1→v2 database upgrade). `npm run build && node e2e/smoke.mjs` drives the real app in
+`npm test` covers AI request shapes, JSON recovery, WAV/transcripts, speech engines, the fill-in-the-blank engine, built-in templates, branded document escaping, brand-color contrast, database upgrades and analytics consent/payload privacy. `npm run build && node e2e/smoke.mjs` drives the real app in
 headless Chromium (fake camera + GPS): create project → capture → annotate → compare →
 video upload + recording → AI analysis (mocked provider) → AI job review → checklist → estimate →
 report → walk-the-job → search → backup.
+
+Playwright is a development dependency. Run `npx playwright install chromium` once.
+`npm run test:e2e` also runs a real-browser analytics privacy test; it requires a configured
+build (see the launch guide). The test intercepts PostHog requests rather than sending them.
+
+## Optional analytics and launch
+
+Copy `.env.example` to `.env.local` and set `VITE_POSTHOG_PROJECT_TOKEN` and `VITE_POSTHOG_HOST`
+from your PostHog project. These are browser configuration values; never use a personal API key.
+Without them, analytics is unavailable and the app still works. Users must separately opt in.
+
+For GitHub Pages, the workflow reads repository variables `JOBCAM_POSTHOG_PROJECT_TOKEN` and
+`JOBCAM_POSTHOG_HOST` at build time. Production events are marked `environment=production`;
+local checks and browser-test builds use `development`. Rebuild after changing configuration.
+
+See [Launch and operating guide](docs/LAUNCH.md) for the release checklist, activation funnel,
+approved product facts, draft launch copy, and recurring agent prompts.
 
 ## Ideas reused from the author's other projects
 - **service-bot** (`ServiceBot_iPhone.html`): the "narrate the job → structured estimate"

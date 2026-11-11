@@ -67,6 +67,24 @@ export const put = async <T>(store: StoreName, value: T): Promise<T> => {
   await wrap((await tx(store, 'readwrite')).put(value))
   return value
 }
+
+/** Commit a prepared import together; an error leaves all existing records intact. */
+export async function putAllAtomic(rows: Partial<Record<StoreName, Record<string, unknown>[]>>): Promise<void> {
+  const db = await openDb()
+  const stores = STORES.filter((store) => rows[store]?.length)
+  if (!stores.length) return
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(stores, 'readwrite')
+    transaction.oncomplete = () => resolve()
+    transaction.onabort = () => reject(transaction.error ?? new Error('Backup import could not be saved. No records were changed.'))
+    try {
+      for (const store of stores) for (const row of rows[store]!) transaction.objectStore(store).put(row)
+    } catch (error) {
+      transaction.abort()
+      reject(error)
+    }
+  })
+}
 export const get = async <T>(store: StoreName, id: string): Promise<T | undefined> =>
   wrap((await tx(store, 'readonly')).get(id)) as Promise<T | undefined>
 export const getAll = async <T>(store: StoreName): Promise<T[]> =>

@@ -83,6 +83,10 @@ try {
   await page.getByRole('button', { name: 'Open photo' }).first().click()
   await page.getByRole('button', { name: 'Mark up' }).click()
   const cv = page.getByLabel('Annotation canvas')
+  await page.waitForFunction(() => {
+    const canvas = document.querySelector('[aria-label="Annotation canvas"]')
+    return canvas && canvas.getBoundingClientRect().width > 0 && canvas.getBoundingClientRect().height > 0
+  })
   const box = await cv.boundingBox()
   await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.2)
   await page.mouse.down()
@@ -242,7 +246,7 @@ try {
   await page.getByLabel('Estimate title').last().waitFor()
   assert.ok((await page.getByLabel('Estimate title').evaluateAll((els) => els.map((e) => e.value))).includes('AI-suggested estimate'))
   await page.getByRole('button', { name: /Checklists/ }).click()
-  await page.getByText('AI findings').waitFor()
+  await page.getByRole('heading', { name: /^AI findings/ }).waitFor()
   await page.getByText(/Cracked lid – Replace valve box lid/).waitFor()
 
   // ───── branding + fill-in-the-blank scope of work ─────

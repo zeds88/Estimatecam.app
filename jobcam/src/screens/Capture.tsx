@@ -1,5 +1,5 @@
 import { Camera as CamIcon, ImagePlus, Square, SwitchCamera, Video } from 'lucide-react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { TagPicker } from '../components/ui'
 import { addMedia } from '../lib/capture'
@@ -21,6 +21,7 @@ export default function Capture() {
   const [count, setCount] = useState(0)
   const [status, setStatus] = useState('')
   const [camError, setCamError] = useState('')
+  const [camReady, setCamReady] = useState(false)
   const video = useRef<HTMLVideoElement>(null)
   const stream = useRef<MediaStream | null>(null)
   const file = useRef<HTMLInputElement>(null)
@@ -31,29 +32,39 @@ export default function Capture() {
     if (!projectId && projects?.length) setProjectId(projects[0].id)
   }, [projects, projectId])
 
-  const startCam = useCallback(async () => {
+  useEffect(() => {
+    let cancelled = false
+    let acquired: MediaStream | null = null
+    setCamReady(false)
     stream.current?.getTracks().forEach((t) => t.stop())
+    stream.current = null
+    if (video.current) video.current.srcObject = null
     setCamError('')
-    if (!navigator.mediaDevices?.getUserMedia) { setCamError('Live camera is not available here – use "Pick photos" instead.'); return }
-    const video_ = { facingMode: facing, width: { ideal: mode === 'video' ? 1920 : 3840 }, height: { ideal: mode === 'video' ? 1080 : 2160 } }
-    try {
+    const startCam = async () => {
+      if (!navigator.mediaDevices?.getUserMedia) { setCamError('Live camera is not available here – use "Pick photos" instead.'); return }
+      const video_ = { facingMode: facing, width: { ideal: mode === 'video' ? 1920 : 3840 }, height: { ideal: mode === 'video' ? 1080 : 2160 } }
       try {
-        stream.current = await navigator.mediaDevices.getUserMedia({ video: video_, audio: mode === 'video' })
-      } catch (e) {
-        if (mode !== 'video') throw e
-        // microphone denied/unavailable: still record, just silently
-        stream.current = await navigator.mediaDevices.getUserMedia({ video: video_, audio: false })
+        try {
+          acquired = await navigator.mediaDevices.getUserMedia({ video: video_, audio: mode === 'video' })
+        } catch (e) {
+          if (mode !== 'video' || cancelled) throw e
+          // microphone denied/unavailable: still record, just silently
+          acquired = await navigator.mediaDevices.getUserMedia({ video: video_, audio: false })
+        }
+        if (cancelled) { acquired.getTracks().forEach((t) => t.stop()); return }
+        stream.current = acquired
+        if (video.current) video.current.srcObject = acquired
+      } catch {
+        if (!cancelled) setCamError('Camera permission denied or unavailable – use "Pick photos" instead.')
       }
-      if (video.current) video.current.srcObject = stream.current
-    } catch {
-      setCamError('Camera permission denied or unavailable – use "Pick photos" instead.')
+    }
+    void startCam()
+    return () => {
+      cancelled = true
+      acquired?.getTracks().forEach((t) => t.stop())
+      if (stream.current === acquired) stream.current = null
     }
   }, [facing, mode])
-
-  useEffect(() => {
-    startCam()
-    return () => stream.current?.getTracks().forEach((t) => t.stop())
-  }, [startCam])
 
   const saveBlob = async (b: Blob) => {
     if (!projectId) { setStatus('Create or pick a project first'); return }
@@ -65,7 +76,7 @@ export default function Capture() {
 
   const toggleRecord = () => {
     if (recorder.current) { recorder.current.stop(); return }
-    if (!stream.current) return
+    if (!camReady || !stream.current?.active) return
     const mime = ['video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find((m) => MediaRecorder.isTypeSupported(m))
     const chunks: Blob[] = []
     const rec = new MediaRecorder(stream.current, mime ? { mimeType: mime } : undefined)
@@ -117,7 +128,7 @@ export default function Capture() {
       </div>
 
       <div className="relative overflow-hidden rounded-2xl bg-black">
-        <video ref={video} autoPlay playsInline muted className="aspect-[3/4] w-full object-cover sm:aspect-video" />
+        <video ref={video} autoPlay playsInline muted onLoadedData={() => setCamReady(!!stream.current?.active)} className="aspect-[3/4] w-full object-cover sm:aspect-video" />
         {camError && <p className="absolute inset-0 grid place-items-center p-6 text-center text-sm text-white">{camError}</p>}
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-around bg-gradient-to-t from-black/70 p-4">
           <label className="btn cursor-pointer !rounded-full !p-3" aria-label="Pick files"><ImagePlus size={22} />
@@ -128,15 +139,15 @@ export default function Capture() {
             }} />
           </label>
           {mode === 'photo' ? (
-            <button className="grid place-items-center rounded-full border-4 border-white bg-white/20 active:scale-90" style={{ width: 72, height: 72 }} onClick={shoot} aria-label="Take photo">
+            <button className="grid place-items-center rounded-full border-4 border-white bg-white/20 active:scale-90 disabled:opacity-40" style={{ width: 72, height: 72 }} disabled={!camReady || !projectId} onClick={shoot} aria-label="Take photo">
               <CamIcon className="text-white" />
             </button>
           ) : (
-            <button className="grid place-items-center rounded-full border-4 border-white bg-red-600/80 active:scale-90" style={{ width: 72, height: 72 }} onClick={toggleRecord} aria-label={recording ? 'Stop recording' : 'Start recording'}>
+            <button className="grid place-items-center rounded-full border-4 border-white bg-red-600/80 active:scale-90 disabled:opacity-40" style={{ width: 72, height: 72 }} disabled={!recording && (!camReady || !projectId)} onClick={toggleRecord} aria-label={recording ? 'Stop recording' : 'Start recording'}>
               {recording ? <Square className="text-white" fill="white" /> : <Video className="text-white" />}
             </button>
           )}
-          <button className="btn !rounded-full !p-3" onClick={() => setFacing((f) => (f === 'environment' ? 'user' : 'environment'))} aria-label="Switch camera"><SwitchCamera size={22} /></button>
+          <button className="btn !rounded-full !p-3" disabled={recording} onClick={() => setFacing((f) => (f === 'environment' ? 'user' : 'environment'))} aria-label="Switch camera"><SwitchCamera size={22} /></button>
         </div>
         {recording && <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white"><span className="h-2 w-2 animate-pulse rounded-full bg-white" /> REC {fmtDuration(elapsed)}</span>}
         {(count > 0 || status) && <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-xs font-bold text-white">{status || `${count} saved`}{status && count ? ` · ${count}` : ''}</span>}

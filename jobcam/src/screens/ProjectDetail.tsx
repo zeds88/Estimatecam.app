@@ -22,6 +22,7 @@ import { flattenPhoto } from '../lib/image'
 import { aiRecap, localRecap } from '../lib/recap'
 import { buildReportHtml } from '../lib/report'
 import type { Checklist, Photo, Project } from '../lib/types'
+import { captureAnalytics } from '../lib/analytics'
 
 type Tab = 'photos' | 'scope' | 'checklists' | 'estimate' | 'activity'
 
@@ -127,6 +128,7 @@ export default function ProjectDetail() {
         review: (await get<Project>('projects', id))?.review, recap: recap || localRecap(project, fp, checklists, comments),
       })
       showHtml(win, html, `${project.name.replace(/[^\w]+/g, '-')}-report.html`)
+      captureAnalytics('jobcam_report_generated', { action })
     } catch (e) {
       win?.close()
       window.alert(`Couldn’t build the report: ${(e as Error).message}`)
@@ -162,6 +164,7 @@ export default function ProjectDetail() {
           <button className="btn btn-primary" onClick={() => makeReport('open')} disabled={!!busy}><FileText size={18} /> Report</button>
         </div>
       </div>
+      <p className="text-xs text-slate-500">Reports include project details, notes, comments, photo locations, transcripts and AI findings when present, plus estimates marked for the customer proposal. Review the report and remove private content before sharing.</p>
       {busy && <p className="text-sm text-slate-500">{busy}</p>}
 
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">
