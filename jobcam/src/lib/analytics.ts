@@ -22,7 +22,7 @@ export function analyticsEnabled(): boolean {
 }
 
 export function screenForPath(path: string): Screen {
-  if (path === '/') return 'projects'
+  if (path === '/' || path === '/projects') return 'projects'
   if (/^\/p\/[^/]+\/?$/.test(path)) return 'project'
   if (path === '/capture' || path === '/walk' || path === '/settings') return path.slice(1) as Screen
   return 'other'

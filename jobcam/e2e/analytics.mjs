@@ -54,6 +54,7 @@ try {
     await new Promise((resolve) => setTimeout(resolve, 100))
   }
   await page.goto(`http://localhost:${port}/?private=LEAK_QUERY&__posthog_debug=true`)
+  await page.getByRole('link', { name: 'Try the free beta', exact: true }).first().click()
   await page.getByText('No projects yet').waitFor()
   await page.getByRole('button', { name: 'New project', exact: true }).click()
   await page.getByLabel('Project name').fill('LEAK_PROJECT_BEFORE_CONSENT')

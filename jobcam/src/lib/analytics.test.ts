@@ -76,6 +76,7 @@ describe('opt-in analytics privacy boundary', () => {
     await vi.waitFor(() => expect(sdk.capture).toHaveBeenCalledWith('jobcam_screen_viewed', { screen: 'project' }))
     expect(sdk.capture.mock.calls.filter(([name]) => name === 'jobcam_screen_viewed')).toHaveLength(1)
     expect(a.screenForPath('/anything-private')).toBe('other')
+    expect(a.screenForPath('/projects')).toBe('projects')
   })
 
   it('does not send queued actions when consent is revoked during lazy loading', async () => {

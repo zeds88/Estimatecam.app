@@ -20,6 +20,11 @@ npm run build      # static site in dist/ – host anywhere (Vercel, Netlify, S3
 ## Hosted version
 Use **[Estimate Cam](https://estimatecam.com/)** on your phone or computer.
 
+The **free public beta** is open. New visitors see the landing page; installations with saved
+projects go directly to their workspace. Use `#/projects` to open the workspace directly or
+`#/beta` to view the landing page. The landing page includes an interactive, illustrative
+preview and a public GitHub feedback link. No signup or payment is required.
+
 Every push to `main` is tested, built and published to **GitHub Pages** by
 `.github/workflows/jobcam-pages.yml` → `https://<owner>.github.io/<repo>/`
 (one-time setup: repo **Settings → Pages → Source: Deploy from a branch → `gh-pages` / root**).

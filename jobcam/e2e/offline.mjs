@@ -28,6 +28,7 @@ try {
       const errors = []
       page.on('pageerror', (error) => errors.push(error.message))
       await page.goto(`${origin}${base}?first-visit=1`)
+      await page.getByRole('link', { name: 'Try the free beta', exact: true }).first().click()
       await page.getByText('No projects yet').waitFor()
       await page.evaluate(async () => {
         await navigator.serviceWorker.ready

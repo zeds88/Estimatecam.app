@@ -118,7 +118,7 @@ export default function Capture() {
         <div className="card space-y-3">
           <h2 className="section-heading">Start with a project</h2>
           <p className="section-copy">Create an active project from Projects, then return to Capture to add photos and videos.</p>
-          <Link className="btn btn-primary" to="/">Go to Projects</Link>
+          <Link className="btn btn-primary" to="/projects">Go to Projects</Link>
         </div>
       ) : (
         <label className="block"><span className="label">1. Choose a project</span>
