@@ -42,6 +42,10 @@ export default function Projects() {
         </div>
         <button className="btn btn-primary min-h-11" onClick={() => setCreating(true)}><Plus size={18} /> New project</button>
       </div>
+      <section className="card flex flex-wrap items-center justify-between gap-4" aria-label="Public beta">
+        <div><p className="text-sm font-semibold text-brand dark:text-teal-300">Free public beta</p><p className="section-copy mt-1">Try a practice job and tell us what would make this useful on your next one.</p></div>
+        <Link to="/beta" className="btn">Beta guide &amp; feedback <ArrowRight size={16} aria-hidden="true" /></Link>
+      </section>
       {!!data?.projects.length && <div className="space-y-3">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="relative flex-1">

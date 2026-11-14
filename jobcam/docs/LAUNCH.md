@@ -13,6 +13,10 @@ workflow with a few people before promoting the much larger set of advanced feat
 ## Source of truth
 
 - Public app: https://estimatecam.com/.
+- Free beta landing page: https://estimatecam.com/#/beta. The root shows this page for a new
+  installation and preserves the workspace for installations with saved projects. Direct
+  workspace: https://estimatecam.com/#/projects. Feedback uses prefilled public GitHub issues;
+  users are told not to include private job content. No new telemetry events were added.
 - Secondary GitHub Pages mirror: https://zeds88.github.io/Estimatecam.app/.
 - Release source: `main`, application root `jobcam/`.
 - Default repository branch currently points to a separate WaterWise prototype. Until the owner

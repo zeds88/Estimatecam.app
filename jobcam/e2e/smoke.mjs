@@ -23,6 +23,20 @@ const url = `http://localhost:${PORT}/`
 
 try {
   await page.goto(url)
+  await page.getByRole('heading', { name: 'Walk the site. Leave with a clear estimate.' }).waitFor()
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'landing fits the mobile viewport')
+  await shot('beta-mobile')
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await shot('beta-desktop')
+  await page.setViewportSize({ width: 1200, height: 630 })
+  await shot('beta-social')
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.getByRole('tab', { name: '2 Scope' }).click()
+  await page.getByRole('heading', { name: 'A clear plan for the work ahead.' }).waitFor()
+  await page.getByRole('tab', { name: '2 Scope' }).press('ArrowRight')
+  await page.getByRole('heading', { name: 'Your scope. Your rates.' }).waitFor()
+  assert.match(await page.getByRole('link', { name: 'Share feedback', exact: true }).getAttribute('href'), /^https:\/\/github\.com\/zeds88\/Estimatecam\.app\/issues\/new\?/)
+  await page.getByRole('link', { name: 'Try the free beta', exact: true }).first().click()
   await page.getByText('No projects yet').waitFor()
   await shot('01-empty')
 
@@ -52,6 +66,10 @@ try {
   page.removeAllListeners('dialog')
   page.on('dialog', (d) => d.accept())
   await page.getByRole('link', { name: 'Projects' }).last().click()
+  await page.goto(url)
+  await page.getByRole('heading', { name: 'Projects', exact: true }).waitFor()
+  await page.getByText('Upload check', { exact: true }).waitFor()
+  assert.equal(await page.getByRole('heading', { name: 'Walk the site. Leave with a clear estimate.' }).count(), 0, 'existing projects bypass the first-visit landing page')
 
   // create project
   await page.getByRole('button', { name: 'New project' }).click()

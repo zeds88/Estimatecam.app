@@ -53,7 +53,7 @@ export default function ProjectDetail() {
   if (!data) return <p className="text-slate-500">Loading…</p>
   const { project, checklists, comments, estimates, settings, scopes } = data
   const photos = data.photos.map((p) => edits[p.id] ?? p)
-  if (!project) return <Empty icon={<FileText size={32} />} title="Project not found"><Link to="/" className="btn mt-2">Back to projects</Link></Empty>
+  if (!project) return <Empty icon={<FileText size={32} />} title="Project not found"><Link to="/projects" className="btn mt-2">Back to projects</Link></Empty>
 
   const shown = filter ? photos.filter((p) => p.tags.includes(filter)) : photos
   const viewIdx = shown.findIndex((p) => p.id === viewing)
@@ -152,7 +152,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="space-y-6">
-      <Link to="/" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#18324f] dark:text-slate-400 dark:hover:text-slate-100"><ArrowLeft size={16} /> Projects</Link>
+      <Link to="/projects" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-slate-500 hover:text-[#18324f] dark:text-slate-400 dark:hover:text-slate-100"><ArrowLeft size={16} /> Projects</Link>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1 basis-56">
           <h1 className="page-heading break-words">{project.name}</h1>
@@ -308,7 +308,7 @@ export default function ProjectDetail() {
           </form>
           <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-5 dark:border-slate-700">
             <button className="btn" onClick={() => makeReport('download')}>Download report (.html)</button>
-            <button className="btn btn-danger" onClick={async () => { if (window.confirm('Delete this project and all its photos?')) { await deleteProject(id); nav('/') } }}><Trash2 size={16} /> Delete project</button>
+            <button className="btn btn-danger" onClick={async () => { if (window.confirm('Delete this project and all its photos?')) { await deleteProject(id); nav('/projects') } }}><Trash2 size={16} /> Delete project</button>
           </div>
         </div>
       )}
