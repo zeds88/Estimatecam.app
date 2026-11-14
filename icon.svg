@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Estimate Cam</title>
+  <rect width="512" height="512" fill="#18324f"/>
+  <path d="M256 112h88l48 48v212a20 20 0 0 1-20 20H256a20 20 0 0 1-20-20V132a20 20 0 0 1 20-20Z" fill="#f4f8fa"/>
+  <path d="M344 112v40a8 8 0 0 0 8 8h40" fill="#c6d7df"/>
+  <path d="M270 190h86M322 232h34M322 270h34" fill="none" stroke="#149b91" stroke-width="12" stroke-linecap="round"/>
+  <path d="M272 342h22m24 0h38" fill="none" stroke="#18324f" stroke-width="12" stroke-linecap="round"/>
+  <path d="M116 214h34l20-30h64l20 30h34a18 18 0 0 1 18 18v112a18 18 0 0 1-18 18H116a18 18 0 0 1-18-18V232a18 18 0 0 1 18-18Z" fill="#18324f" stroke="#f4f8fa" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="202" cy="286" r="46" fill="#149b91"/>
+  <circle cx="202" cy="286" r="23" fill="#18324f"/>
+  <circle cx="276" cy="240" r="6" fill="#149b91"/>
+</svg>

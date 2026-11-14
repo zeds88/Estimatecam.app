@@ -1,0 +1,28 @@
+{
+  "name": "Estimate Cam",
+  "short_name": "Estimate Cam",
+  "description": "Jobsite photos, estimates and branded customer reports. Your job records stay on this device.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#18324f",
+  "theme_color": "#18324f",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+self.__JOBCAM_PRECACHE = {"version":"bbea669b","files":["./","assets/index-BIgLxSXX.css","assets/index-DKyqt0Zz.js","beta/sample-drainage.webp","icon-192.png","icon-512.png","icon.svg","manifest.webmanifest"]};
