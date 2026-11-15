@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url'
 
 const output = resolve('dist')
 const renderer = resolve('node_modules/.cache/estimate-cam-prerender')
-await build({ configFile: false, base: './', plugins: [react()], define: { __BUILD__: JSON.stringify('prerender') }, build: { ssr: 'src/prerender.tsx', outDir: renderer, emptyOutDir: true } })
+await build({ configFile: false, base: './', plugins: [react()], define: { __BUILD__: JSON.stringify('prerender'), 'import.meta.env.BASE_URL': JSON.stringify('./') }, build: { ssr: 'src/prerender.tsx', outDir: renderer, emptyOutDir: true } })
 const { renderPages } = await import(pathToFileURL(`${renderer}/prerender.js`).href)
 const template = await readFile(`${output}/index.html`, 'utf8')
 const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -41,6 +41,7 @@ await writeFile(`${output}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>
 const manifestFile = `${output}/precache-manifest.js`
 const prefix = 'self.__JOBCAM_PRECACHE = '
 const manifest = JSON.parse((await readFile(manifestFile, 'utf8')).slice(prefix.length).trim().replace(/;$/, ''))
+manifest.files.push(...pages.filter((page) => page.path !== '/').map((page) => page.path.slice(1)))
 manifest.version = createHash('sha256').update(manifest.version + identity).digest('hex').slice(0, 12)
 await writeFile(manifestFile, `${prefix}${JSON.stringify(manifest)};\n`)
 console.log(`Prerendered ${pages.length} public pages; generated robots.txt and sitemap.xml.`)

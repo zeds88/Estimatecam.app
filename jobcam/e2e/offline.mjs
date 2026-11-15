@@ -51,6 +51,13 @@ try {
       await page.getByRole('heading', { name: 'Offline regression project' }).waitFor()
       await page.getByRole('link', { name: 'Settings' }).last().click()
       await page.getByRole('heading', { name: 'Settings', exact: true }).waitFor()
+      await page.goto(`${origin}${base}guides/jobsite-photo-reports/`)
+      await page.getByRole('heading', { name: 'How to make a useful jobsite photo report', exact: true }).waitFor()
+      await page.getByRole('link', { name: 'Contractor estimate checklist', exact: true }).first().click()
+      await page.getByRole('heading', { name: 'A contractor estimate checklist before you send', exact: true }).waitFor()
+      await page.getByRole('link', { name: 'Open free app', exact: false }).click()
+      await page.getByRole('heading', { name: 'Projects', exact: true }).waitFor()
+      await page.getByText('Offline regression project', { exact: true }).waitFor()
       assert.deepEqual(errors, [])
       console.log(`OFFLINE E2E PASS: first visit, offline reload and stored project at ${base}`)
     } finally { await context.close() }
