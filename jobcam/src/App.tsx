@@ -100,7 +100,7 @@ function Entry() {
     listProjects().then((projects) => { if (active) setHasProjects(projects.length > 0) }).catch(() => { if (active) setHasProjects(false) })
     return () => { active = false }
   }, [])
-  if (hasProjects === null) return <div className="p-8"><p role="status">Opening Estimate Cam…</p><Link className="btn mt-4" to="/projects">Open app</Link></div>
+  if (hasProjects === null) return <Beta />
   return hasProjects ? <Workspace /> : <Beta />
 }
 

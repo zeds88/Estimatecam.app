@@ -14,7 +14,7 @@ cd jobcam
 npm install
 npm run dev        # http://localhost:5173
 npm test           # unit tests (vitest)
-npm run build      # static site in dist/ – host anywhere (Vercel, Netlify, S3, GitHub Pages)
+npm run build      # static site + prerendered public pages in dist/
 ```
 
 ## Hosted version
@@ -24,6 +24,13 @@ The **free public beta** is open. New visitors see the landing page; installatio
 projects go directly to their workspace. Use `#/projects` to open the workspace directly or
 `#/beta` to view the landing page. The landing page includes an interactive, illustrative
 preview and a public GitHub feedback link. No signup or payment is required.
+
+The build prerenders the landing page and two public field guides to readable HTML,
+then generates `robots.txt` and `sitemap.xml` with only canonical marketing URLs.
+Guide links use real paths; private projects remain in browser storage and hash routes.
+The guides require no app JavaScript. `e2e/seo.mjs` checks public content with JavaScript
+disabled, metadata, links, mobile layout and crawl files. The offline cache version
+includes the final rendered content, so public-page changes update the cached shell.
 
 Every push to `main` is tested, built and published to **GitHub Pages** by
 `.github/workflows/jobcam-pages.yml` → `https://<owner>.github.io/<repo>/`
