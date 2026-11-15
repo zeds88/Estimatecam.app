@@ -104,6 +104,30 @@
 .beta-site :focus-visible { outline: 3px solid #087f8c; outline-offset: 4px; }
 .beta-site #beta-main { outline: none; }
 .beta-site section[id] { scroll-margin-top: 30px; }
+.beta-resources { padding-block: 44px 64px; }
+.beta-resource-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; }
+.beta-resource-grid > a { border: 1px solid #cfddd7; border-radius: 8px; padding: 24px; }
+.beta-resource-grid h3 { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 18px; font-weight: 650; }
+.beta-resource-grid h3 svg { flex-shrink: 0; }
+.beta-resource-grid p, .beta-faq p { color: #526677; font-size: 14px; line-height: 1.85; margin-top: 12px; }
+.beta-faq { padding-block: 10px 64px; }
+.beta-faq h2 { margin-bottom: 25px; }
+.beta-faq details { border-top: 1px solid #cfddd7; padding-block: 18px; }
+.beta-faq summary { cursor: pointer; font-size: 16px; font-weight: 600; }
+.beta-faq p { max-width: 820px; }
+.beta-guide { max-width: 940px; padding-block: 20px 70px; }
+.beta-breadcrumb { font-size: 13px; color: #526677; margin-bottom: 32px; }
+.beta-guide h1 { font-size: clamp(34px, 5vw, 58px); line-height: 1.1; letter-spacing: -.045em; font-weight: 700; margin-block: 12px 25px; }
+.beta-guide h2 { font-size: 25px; line-height: 1.3; margin-top: 34px; }
+.beta-guide article > p, .beta-guide article li { color: #435d6b; font-size: 16px; line-height: 1.9; margin-top: 16px; }
+.beta-guide article > .beta-guide-lead { font-size: 19px; }
+.beta-guide article ul { list-style: disc; padding-left: 24px; margin-top: 16px; }
+.beta-guide article li { margin-top: 6px; }
+.beta-guide article a, .beta-guide-next p a, .beta-breadcrumb a { text-decoration: underline; text-underline-offset: 4px; }
+.beta-guide-next { background: #edf6f1; padding: 28px; border-radius: 8px; margin-top: 44px; }
+.beta-guide-next h2 { margin-top: 0; }
+.beta-guide-next p { font-size: 15px; line-height: 1.8; margin-block: 16px; }
+@media (max-width: 760px) { .beta-resource-grid { grid-template-columns: 1fr; } .beta-resources { padding-block: 25px 40px; } .beta-resource-grid h3 { font-size: 17px; } .beta-faq { padding-bottom: 40px; } .beta-guide article > p, .beta-guide article li { font-size: 15px; } .beta-guide-next { padding: 22px; } }
 @media (min-width: 1440px) { .beta-container { padding-inline: 60px; } }
 @media (max-width: 1000px) { .beta-hero { gap: 5%; } .beta-hero h1 { font-size: 56px; } .beta-demo-tabs { gap: 10px; } .beta-hero-actions { gap: 12px; } .beta-job-photo img { height: 220px; } .beta-demo-panel, .beta-sample-document { min-height: 328px; } .beta-sample-document { padding: 20px; } .beta-sample-document h3 { font-size: 19px; } }
 @media (max-width: 760px) { .beta-container { padding-inline: 6%; } .beta-nav { min-height: 80px; gap: 12px; } .beta-brand { font-size: 19px; } .beta-brand img { width: 32px; height: 32px; } .beta-nav nav { gap: 12px; font-size: 12px; } .beta-nav-detail { display: none; } .beta-hero { grid-template-columns: 1fr; gap: 22px; padding-top: 25px; padding-bottom: 38px; } .beta-hero h1 { font-size: clamp(43px,10.5vw,70px); max-width: 600px; margin-top: 22px; } .beta-desktop-break { display: none; } .beta-hero-description { font-size: 16px; max-width: 480px; } .beta-made-for { display: none; } .beta-hero-actions { margin-top: 24px; gap: 22px; } .beta-demo-wrap { padding: 20px 4px 0; max-width: 540px; width: 100%; margin-inline: auto; } .beta-demo-wrap::before { inset: 0 -10px 15px; } .beta-job-photo img { height: 240px; } .beta-demo-panel, .beta-sample-document { min-height: 328px; } .beta-demo-caption { margin-top: 18px; font-size: 8px; } .beta-principles > div { gap: 18px; padding-block: 23px; justify-content: flex-start; } .beta-principles span { font-size: 11px; width: 100%; } .beta-workflow { padding-block: 58px; } .beta-section-intro { display: block; } .beta-section-intro > p:last-child { margin-top: 20px; font-size: 14px; } .beta-workflow-steps { grid-template-columns: 1fr; gap: 24px; margin-top: 32px; } .beta-workflow-step { padding-top: 23px; gap: 20px; } .beta-workflow-step svg { margin-bottom: 10px; } .beta-workflow-step p { max-width: 480px; } .beta-ownership-inner { grid-template-columns: 1fr; gap: 28px; padding-block: 52px; } .beta-ownership-copy > p:first-child { font-size: 18px; } .beta-ownership h2 br { display: none; } .beta-ownership h2 { max-width: 300px; line-height: 1.17; } .beta-invitation { grid-template-columns: 1fr; gap: 36px; padding-top: 58px; padding-bottom: 32px; } .beta-beta-notes { border-left: none; border-top: 1px solid #cfddd7; padding: 25px 0 0; } .beta-beta-notes ul { grid-template-columns: 1fr 1fr; gap: 16px 12px; } .beta-beta-notes li { align-items: flex-start; } .beta-beta-notes svg { flex-shrink: 0; } .beta-privacy { padding-bottom: 32px; } .beta-footer { gap: 8px 15px; padding-block: 20px; } .beta-footer > div { margin-left: 0; width: 100%; gap: 22px; } }
