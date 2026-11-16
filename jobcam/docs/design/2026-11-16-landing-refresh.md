@@ -6,7 +6,7 @@ The owner requested a CompanyCam-style improvement to the app's public landing p
 
 A field-photo hero followed by a hands-on photo → scope → estimate → report preview. Keep the page oriented to solo drainage, irrigation and landscape contractors, with one primary action: try the free beta. Keep the existing landing/workspace behavior, IndexedDB data, opt-in analytics, no-account beta, canonical URLs, verification tags, guides and offline compatibility.
 
-Tokens: paper #ffffff; forest #173e39; ink #18332e; orange #f5a15d; mist #edf4ef; secondary text #52665e. Avenir Next/system sans for interface and large compact headings, left aligned. Photography provides the hero's depth; no decorative gradients, fake trust logos or carousel. Existing original drainage illustration remains visibly labeled as AI-generated. Distinct from the reference's blue/yellow identity, centered uppercase type and video backdrop.
+Updated at owner request: use a contractor-oriented industrial palette. Tokens: paper #ffffff; charcoal #18212b; ink #1f2933; safety orange #f28c28; steel surface #edf0f3; secondary text #526170. Dark navigation, neutral hero tint, orange action buttons, steel-gray panels and high-contrast selected tabs replace the green and pastel palette. Avenir Next/system sans for interface and large compact headings, left aligned. Photography provides the hero's depth; no decorative gradients, fake trust logos or carousel. Existing original drainage illustration remains visibly labeled as AI-generated. Distinct from the reference's blue/yellow identity, centered uppercase type and video backdrop.
 
 ```
 Brand     Workflow / Field guides          Open app / Try beta
