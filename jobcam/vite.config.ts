@@ -9,7 +9,7 @@ export default defineConfig({
     apply: 'build',
     enforce: 'post',
     generateBundle(_options, bundle) {
-      const files = new Set(['./', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'beta/sample-drainage.webp'])
+      const files = new Set(['./', 'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png', 'beta/sample-drainage.webp', 'beta/hero-field-poster.jpg', 'beta/hero-field-mobile-poster.jpg', 'beta/hero-app-poster.png'])
       const addChunk = (name: string) => {
         if (files.has(name)) return
         const chunk = bundle[name]

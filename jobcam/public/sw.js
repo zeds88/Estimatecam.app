@@ -22,6 +22,9 @@ self.addEventListener('fetch', (e) => {
   const req = e.request
   const url = new URL(req.url)
   if (req.method !== 'GET' || url.origin !== location.origin || !url.href.startsWith(SCOPE)) return
+  // Range responses (206) cannot be stored in Cache API. Hero loops are
+  // optional streaming media; use the browser's HTTP/range handling instead.
+  if (req.headers.has('range') || /\/beta\/hero-(field(?:-mobile)?|app)\.mp4$/.test(url.pathname)) return
   e.respondWith((async () => {
     const cache = await caches.open(CACHE)
     if (req.mode === 'navigate') {
