@@ -15,8 +15,24 @@ const types = {
   '.svg': 'image/svg+xml',
   '.mp4': 'video/mp4'
 }
+let upgradeWorkerVersion = 1
 const server = createServer(async (req, res) => {
   try {
+    if (
+      new URL(req.url, 'http://localhost').pathname === '/upgrade-worker.js'
+    ) {
+      res.writeHead(200, {
+        'Content-Type': 'text/javascript',
+        'Cache-Control': 'no-store'
+      })
+      res.end(`
+        // Regression fixture: the retiring worker fails optional media requests.
+        self.addEventListener('install', () => self.skipWaiting());
+        self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+        ${upgradeWorkerVersion === 1 ? "self.addEventListener('fetch', event => { if (event.request.url.includes('.mp4')) event.respondWith(Response.error()); });" : ''}
+      `)
+      return
+    }
     const path = new URL(req.url, 'http://localhost').pathname.replace(
       /^\/Estimatecam\.app\//,
       '/'
@@ -195,7 +211,7 @@ try {
       reducedMotion:
         preference === 'reduced-motion' ? 'reduce' : 'no-preference',
       viewport: { width: 390, height: 844 },
-      serviceWorkers: 'block'
+      serviceWorkers: 'allow'
     })
     if (preference === 'save-data')
       await context.addInitScript(() => {
@@ -248,6 +264,47 @@ try {
     )
     await context.close()
   }
+  // A returning visitor can load the new page while the retiring worker still
+  // owns its requests. Playback must recover on takeover without a manual click.
+  const upgradeContext = await browser.newContext({ serviceWorkers: 'allow' })
+  await upgradeContext.addInitScript(() => {
+    const register = navigator.serviceWorker.register.bind(
+      navigator.serviceWorker
+    )
+    navigator.serviceWorker.register = (_url, options) =>
+      register('/upgrade-worker.js', options)
+  })
+  const upgradePage = await upgradeContext.newPage()
+  await upgradePage.goto(origin)
+  await upgradePage.evaluate(async () => {
+    await navigator.serviceWorker.ready
+    if (!navigator.serviceWorker.controller) {
+      await new Promise((resolve) =>
+        navigator.serviceWorker.addEventListener('controllerchange', resolve, {
+          once: true
+        })
+      )
+    }
+  })
+  await upgradePage.reload()
+  await upgradePage.waitForFunction(
+    (selector) =>
+      [...document.querySelectorAll(selector)].every((video) => video.error),
+    videos
+  )
+  upgradeWorkerVersion = 2
+  await upgradePage.evaluate(async () =>
+    (await navigator.serviceWorker.getRegistration()).update()
+  )
+  await upgradePage.waitForFunction(
+    (selector) =>
+      [...document.querySelectorAll(selector)].every(
+        (video) => !video.error && !video.paused && video.currentTime > 0.1
+      ),
+    videos
+  )
+  await upgradeContext.close()
+
   const precache = await (await fetch(`${origin}/precache-manifest.js`)).text()
   assert.ok(
     precache.includes('hero-field-poster.jpg') &&
@@ -258,7 +315,7 @@ try {
     'large optional loops are not precached'
   )
   console.log(
-    'HERO E2E PASS: real muted playback, shared pause/resume, offscreen pause, reduced-motion/save-data opt-in, root/Pages media and offline posters'
+    'HERO E2E PASS: real muted playback, shared pause/resume, offscreen pause, reduced-motion/save-data opt-in, root/Pages media, offline posters and automatic worker-upgrade recovery'
   )
 } finally {
   await browser?.close()

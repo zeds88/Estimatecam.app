@@ -81,10 +81,28 @@ export default function HeroScene({ children }: { children: ReactNode }) {
       sync()
     })
     if (section.current) observer.observe(section.current)
+    // An older worker can fail a pending range request during an upgrade.
+    // Retry undecoded media once the replacement worker controls this page.
+    const recoverAfterUpgrade = () => {
+      if (shouldLoad) {
+        videos.forEach((video) => {
+          if (video.readyState === 0 && video.getAttribute('src')) video.load()
+        })
+      }
+      sync()
+    }
+    navigator.serviceWorker?.addEventListener(
+      'controllerchange',
+      recoverAfterUpgrade
+    )
     document.addEventListener('visibilitychange', sync)
     sync()
     return () => {
       observer.disconnect()
+      navigator.serviceWorker?.removeEventListener(
+        'controllerchange',
+        recoverAfterUpgrade
+      )
       document.removeEventListener('visibilitychange', sync)
       videos.forEach((video) => video.pause())
     }
