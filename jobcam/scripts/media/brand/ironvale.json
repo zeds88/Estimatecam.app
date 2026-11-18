@@ -9,7 +9,17 @@
   "footer": "Ironvale Outdoor Co. · Fictional demonstration company",
   "target": "Owner-operated landscape enhancement, drainage and small hardscape project crews",
   "priceBook": [
-    { "keywords": ["bed", "edge", "paver"], "description": "Bed edge reset — sample allowance", "unit": "lf", "price": 28 },
-    { "keywords": ["drainage", "assessment"], "description": "Drainage assessment — sample", "unit": "visit", "price": 125 }
+    {
+      "keywords": ["bed", "edge", "paver"],
+      "description": "Bed edge reset — sample allowance",
+      "unit": "lf",
+      "price": 28
+    },
+    {
+      "keywords": ["drainage", "assessment"],
+      "description": "Drainage assessment — sample",
+      "unit": "visit",
+      "price": 125
+    }
   ]
 }
