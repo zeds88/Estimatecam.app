@@ -10,7 +10,7 @@
     "build": "tsc -b && vite build && node scripts/prerender.mjs",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:e2e": "node e2e/seo.mjs && node e2e/smoke.mjs && node e2e/analytics.mjs && node e2e/offline.mjs",
+    "test:e2e": "node e2e/seo.mjs && node e2e/hero.mjs && node e2e/smoke.mjs && node e2e/analytics.mjs && node e2e/offline.mjs",
     "lint": "oxlint"
   },
   "dependencies": {
