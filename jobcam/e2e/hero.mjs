@@ -38,6 +38,9 @@ try {
       assert.equal(await video.evaluate((node) => node.muted && node.loop && node.playsInline), true)
       assert.ok((await video.getAttribute('src')).startsWith('./beta/'))
     }
+    assert.deepEqual(await page.locator(videos).evaluateAll(nodes => nodes.map(video => video.playbackRate)), [0.8, 1], 'only silent field B-roll is slowed')
+    await page.locator('.beta-phone-frame video').evaluate(video => { video.currentTime = 20 })
+    await page.waitForFunction(() => document.querySelector('.beta-phone-demo figcaption').textContent.includes('Your services. Your rates.'))
     await page.getByRole('button', { name: 'Pause hero video', exact: true }).click()
     await page.waitForFunction((selector) => [...document.querySelectorAll(selector)].every((video) => video.paused), videos)
     const times = await page.locator(videos).evaluateAll((nodes) => nodes.map((video) => video.currentTime))

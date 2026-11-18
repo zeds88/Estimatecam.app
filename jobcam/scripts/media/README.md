@@ -1,17 +1,26 @@
-# Hero loop assets
+# Branded hero and review video
 
-The hero pairs a real first-person field walk-through with a recording of a fictional project in the actual Estimate Cam app. It does not depict a physical phone being operated in the original field footage. The page labels it as a sample app demonstration.
+The hero pairs owner-supplied POV field footage with a recording of a fictional company in the actual Estimate Cam app. It does not depict a physical phone being operated in the original footage. Ironvale Outdoor Co. is an invented demonstration brand, with original artwork in `brand/`; its `.example` contact details are reserved placeholders.
 
-Source: owner-supplied `IMG_5601.mov` (1080×1920, SDR Rec.709 H.264, approximately 30 fps, 97.81 seconds). Retain the owner's immutable original outside the public repository. The selected source interval is 40–52 seconds at natural speed. Overlap the final and first second for an 11-second loop. Do not publish original audio, GPS or other source metadata. The shorter `IMG_5062.mov` is unused.
+The 40-second recording demonstrates business logo/color/details, photo captions, a custom scope, an owned price book, editable quantities/rates and the actual generated report. The report's 24 lf × $32 = $768 is a sample allowance, not a measurement or recommended rate. No customer identities, keys, real quotes, live API calls or analytics are used. Captures run in disposable browser contexts; the generated report is displayed as-is in the recorded viewport. Never count this as a tester trial.
 
-The app recording uses a disposable local browser context, one source-video still, fictional courtyard notes and an illustrative $125 assessment rate. No customer identity, address, provider key or live API is used. This is a workflow illustration, not a quote, testimonial or observed customer trial.
+## Rebuild
 
-Requirements: the project's Playwright installation, Python 3 and FFmpeg with H.264/JPEG support. No paid generation, avatars or third-party media are used.
+Requires the project's Playwright installation, Python 3, Pillow and FFmpeg with H.264/JPEG support. No paid generation or third-party media.
 
-1. Extract a reference photo from the owner's clip (for example FFmpeg at source second 44, scaled uniformly to 900px wide), saving `field-photo.jpg` in a work directory.
-2. Start the current local app at `http://127.0.0.1:4180`.
-3. `node scripts/media/record-hero-demo.mjs http://127.0.0.1:4180 /absolute/work-dir /absolute/work-dir/field-photo.jpg`
-4. `python3 scripts/media/render-hero.py /absolute/path/IMG_5601.mov /absolute/work-dir`
-5. Inspect the exported clips at the beginning, transitions, pricing entry and seam. Run `npm run build` and `node e2e/hero.mjs`.
+1. Run `python3 scripts/media/brand/create-mark.py` if changing the original logo.
+2. Start the current app at `http://127.0.0.1:4180` and supply a retained local field photo.
+3. `node scripts/media/record-hero-demo.mjs http://127.0.0.1:4180 /absolute/work-dir /absolute/field-photo.jpg`
+4. `python3 scripts/media/render-hero.py retained /absolute/work-dir`
+5. Optional standalone 1280×720 branded cut: `python3 scripts/media/render-branded-review.py /absolute/work-dir /absolute/output.mp4`.
+6. Inspect openings, chapter transitions, text, rates, report and end/start seam. Run `npm run build` and `node e2e/hero.mjs`.
 
-Public delivery: separate landscape and portrait field clips plus the app recording, as silent H.264/yuv420p MP4 with faststart; a JPEG field poster and PNG app poster. Posters are included in the offline shell, videos are optional downloads. With reduced motion or Save-Data enabled, neither video downloads or plays until the visitor chooses Play. A visible control pauses both; leaving the hero or hiding the tab pauses playback. Existing app data and opt-in analytics are unaffected.
+The app recording plays at natural speed with readable holds. Only silent ambient field footage plays at 0.8×, as requested by the owner. `recording.json` drives `src/lib/heroDemo.ts` and the standalone chapter plates; distinctive scope-editor frame matching aligns the recorder's clock. Keep the generated manifest with its matching video.
+
+## Field footage provenance
+
+Owner-supplied `IMG_5601.mov` was 1080×1920 SDR Rec.709 H.264, approximately 30 fps, 97.81 seconds. The original temporary Photos attachment has expired. Reuse the retained committed field clips and local extracted still; do not claim new source footage. If the owner supplies the original again, `render-hero.py /absolute/IMG_5601.mov /absolute/work-dir` recreates landscape/portrait delivery from seconds 40–52, with a one-second seam blend yielding an 11-second loop. The shorter `IMG_5062.mov` is unused. Originals stay outside the public repository; no audio, GPS or source metadata is published.
+
+## Delivery and accessibility
+
+Silent H.264/yuv420p MP4 with faststart; separate landscape/portrait field clips and one app recording. JPEG field posters and PNG app poster are cached for offline use. Videos stay optional and bypass service-worker caching/range handling. Reduced motion and Save-Data prevent video downloads until manual Play. Shared pause/play, offscreen/hidden pause and offline fallback remain supported. Caption space is reserved to prevent chapter changes shifting the page. Existing projects, settings, free-beta behavior and opt-in analytics remain intact.
