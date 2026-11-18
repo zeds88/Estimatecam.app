@@ -1,0 +1,1 @@
+self.__JOBCAM_PRECACHE = {"version":"f49d6f0d87b9","files":["./","assets/index-BCD4CTA8.css","assets/index-t0QptFCN.js","beta/hero-app-poster.png","beta/hero-field-mobile-poster.jpg","beta/hero-field-poster.jpg","beta/sample-drainage.webp","icon-192.png","icon-512.png","icon.svg","manifest.webmanifest","guides/jobsite-photo-reports/","guides/contractor-estimate-checklist/"]};
